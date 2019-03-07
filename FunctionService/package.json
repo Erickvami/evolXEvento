@@ -1,0 +1,24 @@
+{
+  "name": "functionservice",
+  "version": "1.0.0",
+  "description": "function as a service",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "amqplib": "^0.5.3",
+    "async": "^2.6.2",
+    "express": "^4.16.4",
+    "firebase": "^5.8.3",
+    "fs": "0.0.1-security",
+    "genetic-js": "^0.1.14",
+    "genetical": "^0.3.7",
+    "gpu": "^1.0.0",
+    "microjob": "^0.4.2",
+    "scaledrone-node": "^1.4.0",
+    "scaledrone-node-push": "^2.2.0"
+  }
+}
