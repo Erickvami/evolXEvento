@@ -131,18 +131,19 @@ class Chart extends Component{
                         return  <div><Plot
         data={[
           {
+            type: 'mesh3d',
             x: fn[item.name].x,
             y: fn[item.name].y,
             z: fn[item.name].y.map((xy,i)=> fn.fitness[item.name]([xy,fn[item.name].x[i]])),
-            type: 'mesh3d',
-            color:'#01c4c3',
+            intensity: fn[item.name].y.map((xy,i)=> fn.fitness[item.name]([xy,fn[item.name].x[i]])),
+            colorscale: 'Jet', 
             opacity:0.8
           },{
             x: xyz.x,
             y: xyz.y,
             z: xyz.z,
             marker:{size:4,color:'#1e1f26'},
-            mode: 'markers',
+            mode: 'markers', 
             type: 'scatter3d',
             color:'#1e1f26',
           }

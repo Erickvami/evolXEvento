@@ -51,7 +51,9 @@ conn.createChannel(function(err,ch){
 
         ch.consume('Evolved', function(msg) {
             var evolvedPop=JSON.parse(msg.content);
-        socket.emit('evolved',evolvedPop);     
+        socket.emit('evolved',evolvedPop);
+            //here will comes a DB connection to creates a line of populations by experiment allowing us to cross them and keep a record of all experiments
+            //sendRabbitmq(msg.content);
         }, {noAck: true});
      });
  });
