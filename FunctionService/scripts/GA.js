@@ -8,15 +8,31 @@ module.exports={
         let genetic=Genetic.create();//creates new GA object
         const fitness={// all fitness function definitions
         sphere:(entity)=>{let total=0; entity.forEach(item=>{total+=Math.pow(item,2)});return total;},//[Σn^2]}
-        rastringin:(entity)=>{let total=0; entity.forEach(item=>{total+=(Math.pow(item,2)-10*Math.cos(2*Math.PI*item))});return total;}
+        rastringin:(entity)=>{let total=0; entity.forEach(item=>{total+=(Math.pow(item,2)-10*Math.cos(2*Math.PI*item))});return (10*entity.length)+total;}
         }
         const crossovers={
           uniform: (ParentOne,ParentTwo)=> {
               var parents=[ParentOne,ParentTwo];
               var mask= ParentOne.map(item=> Math.round(Math.random()));
               return [mask.map((item,i)=> parents[item][i]),mask.map((item,i)=> parents[item==1?0:1][i])];
+          },
+          onePoint:(ParentOne,ParentTwo)=>{
+              return [ParentOne.map((item,i)=> i<=Math.round(ParentOne.length/2)-1?item:ParentTwo[i]),ParentTwo.map((item,i)=> i<=Math.round(ParentTwo.length/2)-1?item:ParentOne[i])];
           }
         };
+        const mutations={
+            gaussian:(entity)=>{
+                let x1=Math.random();
+                let x2=Math.random();
+                if(x1==0)
+                    x1=1;
+                if(x2==0)
+                    x2=1;
+                let y1 = Math.sqrt(-2.0 * Math.log(x1)) * Math.cos(2.0 * Math.PI * (x2+0.001));
+                let stddev=Math.random()*2;
+            return entity.map(item=> y1 * stddev + item);
+            }
+        }
         
         genetic.entities= opt.population; //Asigns population
         //this.genetic.usingWebWorker=true; //Activates a better perfomance using webworkers
@@ -25,6 +41,7 @@ module.exports={
         genetic.configuration.crossover=opt.crossoverPer;
         genetic.configuration.mutation=opt.mutationPer;
         genetic.crossover=crossovers[opt.crossoverFunc];
+        genetic.mutate=mutations[opt.mutationFunc];
         genetic.optimize= Genetic.Optimize[opt.optimizer];//Defines what is the purpose of optimizing, maximize or minimize
         genetic.configuration.iterations=opt.iterations; //Sets the number of generations
         genetic.configuration.size=opt.size; //Sets the population size

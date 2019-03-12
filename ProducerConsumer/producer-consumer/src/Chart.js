@@ -56,7 +56,7 @@ class Chart extends Component{
                   tooltip={true}
                   value={this.state[obj.id]}
                   onChange={value=> obj.percentage? this.setState({[obj.id]:value.toFixed(1)}):this.setState({[obj.id]:value})}
-                  labels={{50:this.state[obj.id]}}
+                  labels={{5:this.state[obj.id]}}
                 />
                     </label>;
     }
@@ -70,15 +70,17 @@ class Chart extends Component{
     mutation:this.props.mutation,
     crossover:this.props.crossover,
     optimizer:this.props.optimizer,
-    iterations:this.props.random.iterations? Math.round(Math.random()*100000):this.props.iterations,
+    iterations:this.props.random.iterations? Math.round(Math.random()*4999)+1:this.props.iterations,
     size:pSize,
     fitness:func,
     crossoverPer:this.props.random.crossoverPercentage?parseFloat(Math.random().toFixed(1)):this.props.crossoverPer,
     mutationPer:this.props.random.mutationPercentage?parseFloat(Math.random().toFixed(1)):this.props.mutationPer,
+    crossoverFunc:'uniform',
+    mutationFunc:'gaussian',
     id:fid+'-'+i,
     population:algorithm.generateRandomPopulation({
         fitness:func,
-        size:this.props.random.individualSize? Math.round(Math.random()*49)+1:this.props.size,
+        size:this.props.random.individualSize? Math.round(Math.random()*39)+1:this.props.size,
         type:'float',//int,float,string,array,object
         rangeValue:[0,10],
         length:pSize
@@ -107,12 +109,18 @@ class Chart extends Component{
         </div>;
     }
     GetXYZ(fitnessFunction){
-        let x=this.state.json.filter(f=> f.fitness===fitnessFunction).length>0?this.state.json.filter(f=> f.fitness===fitnessFunction)[0].population.map(item=> item[0]):[];
-        let y=this.state.json.filter(f=> f.fitness===fitnessFunction).length>0?this.state.json.filter(f=> f.fitness===fitnessFunction)[0].population.map(item=> item[1]):[];
+        let data=this.state.json.filter(f=> f.fitness===fitnessFunction);
+        let x=data.length>0?data[0].population.map(item=> item[0]):[];
+        let y=data.length>0?data[0].population.map(item=> item[1]):[];
+        let z=data.length>0?y.map((item,i)=> fn.fitness[fitnessFunction]([item,x[i]])):[];
         return {
             x:x,
             y:y,
-            z:this.state.json.filter(f=> f.fitness===fitnessFunction).length>0?y.map((item,i)=> fn.fitness[fitnessFunction]([item,x[i]])):[]
+            z:z,
+            min:Math.min.apply(null,z),
+            max:Math.max.apply(null,z),
+            avg:z.length>0?z.reduce((previous, current) => current += previous)/z.length:0,
+            id:data.length>0?data[0].id:0
         }
     }
     render(){
@@ -123,7 +131,7 @@ class Chart extends Component{
             <Button onClick={this.Stop} variant='danger'>Stop</Button>
             <Button onClick={this.Run} variant='success'>Run</Button>
             </ButtonGroup>
-            {this.SliderInput({label:'Packages',id:'nMessages',step:1,min:1,max:100,})}
+            {this.SliderInput({label:'Packages',id:'nMessages',step:1,min:1,max:10,})}
             <div>
                 {
                     this.state.fitness.filter(f=> f.checked).map(item=>{
@@ -137,18 +145,37 @@ class Chart extends Component{
             z: fn[item.name].y.map((xy,i)=> fn.fitness[item.name]([xy,fn[item.name].x[i]])),
             intensity: fn[item.name].y.map((xy,i)=> fn.fitness[item.name]([xy,fn[item.name].x[i]])),
             colorscale: 'Jet', 
-            opacity:0.8
+            opacity:1
           },{
             x: xyz.x,
             y: xyz.y,
             z: xyz.z,
-            marker:{size:4,color:'#1e1f26'},
+            showlegend:true,
+            name:'Experiment '.concat(xyz.id,'<br>','Min:',xyz.min,'<br>Max:',xyz.max,'<br>Avg:',xyz.avg),
+//            text:'alex',
+            marker:{size:5,/*color:'#1e1f26',*/borderColor:'white',line: {
+                  color: 'rgb(204, 204, 204)',
+                  width: 1
+            }},
             mode: 'markers', 
             type: 'scatter3d',
-            color:'#1e1f26',
-          }
+//            color:'#1e1f26'
+          },
+                                    
         ]}
-        layout={ {width: 500, height: 500, title: item.name} }
+        layout={ {width: 700, height: 500, title: item.name,legend: {
+    x: -1,
+    y: 1,
+        traceorder: 'normal',
+    font: {
+      family: 'sans-serif',
+      size: 12,
+      color: '#000'
+    },
+    bgcolor: '#E2E2E2',
+    bordercolor: '#000',
+    borderwidth: 2
+  }} }
       /></div>
                     },this)
                 }

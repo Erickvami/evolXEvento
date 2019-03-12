@@ -95,9 +95,9 @@ class ControlPanel extends Component{
                 <Col xs={3}>
                     <Card>
             <ListGroup>
-                <ListGroup.Item>{this.SliderInput({label:'Generations',id:'iterations',step:10,min:5,max:10000,checkbox:true})}</ListGroup.Item>
-                <ListGroup.Item>{this.SliderInput({label:'Population',id:'population',step:10,min:10,max:15000,checkbox:true})}</ListGroup.Item>
-                <ListGroup.Item>{this.SliderInput({label:'Individual size',id:'individualSize',step:1,min:2,max:50,checkbox:true})}</ListGroup.Item>
+                <ListGroup.Item>{this.SliderInput({label:'Generations',id:'iterations',step:10,min:1,max:5000,checkbox:true})}</ListGroup.Item>
+                <ListGroup.Item>{this.SliderInput({label:'Population',id:'population',step:10,min:10,max:10000,checkbox:true})}</ListGroup.Item>
+                <ListGroup.Item>{this.SliderInput({label:'Individual size',id:'individualSize',step:2,min:2,max:40,checkbox:true})}</ListGroup.Item>
                 
                 <ListGroup.Item>{this.DropdownInput({id:'crossover',label:'Crossover selection',checkbox:true})} 
                 </ListGroup.Item>

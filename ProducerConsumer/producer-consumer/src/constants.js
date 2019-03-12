@@ -1,6 +1,6 @@
 export const fn={fitness:{//all fitness function definitions
         sphere:(entity)=>{let total=0; entity.forEach(item=>{total+=Math.pow(item,2)});return total;},//[Σn^2]}
-        rastringin:(entity)=>{let total=0; entity.forEach(item=>{total+=(Math.pow(item,2)-10*Math.cos(2*Math.PI*item))});return total;}
+        rastringin:(entity)=>{let total=0; entity.forEach(item=>{total+=(Math.pow(item,2)-10*Math.cos(2*Math.PI*item))});return (10*entity.length)+total;}
         },ranges:{
          rastringin:[-5.12,5.12],
          sphere:[-5.12,5.12],
