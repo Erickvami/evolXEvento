@@ -110,18 +110,46 @@ class Chart extends Component{
     }
     GetXYZ(fitnessFunction){
         let data=this.state.json.filter(f=> f.fitness===fitnessFunction);
-        let x=data.length>0?data[0].population.map(item=> item[0]):[];
-        let y=data.length>0?data[0].population.map(item=> item[1]):[];
-        let z=data.length>0?y.map((item,i)=> fn.fitness[fitnessFunction]([item,x[i]])):[];
-        return {
-            x:x,
-            y:y,
-            z:z,
-            min:Math.min.apply(null,z),
-            max:Math.max.apply(null,z),
-            avg:z.length>0?z.reduce((previous, current) => current += previous)/z.length:0,
-            id:data.length>0?data[0].id:0
-        }
+//        let x=data.length>0?data[0].population.map(item=> item[0]):[];
+//        let y=data.length>0?data[0].population.map(item=> item[1]):[];
+//        let z=data.length>0?y.map((item,i)=> fn.fitness[fitnessFunction]([item,x[i]])):[];
+        
+        let result= data.map(dt=>{
+//            console.log(dt);
+            let x=dt.population.map(item=> item[0]);
+            let y=dt.population.map(item=> item[1]);
+            let z=y.map((item,i)=> fn.fitness[fitnessFunction]([item,x[i]]));
+            
+            return {
+            x: x,
+            y: y,
+            z: z,
+            showlegend:true,
+            name:'Experiment '.concat(dt.id,'<br>',
+                                      'Min:',Math.min.apply(null,z),
+                                      '<br>Max:',Math.max.apply(null,z),
+                                      '<br>Avg:',z.length>0?z.reduce((previous, current) => current += previous)/z.length:0),
+//            text:'alex',
+            marker:{size:5,/*color:'#1e1f26',*/borderColor:'white',line: {
+                  color: 'rgb(204, 204, 204)',
+                  width: 1
+            }},
+            mode: 'markers', 
+            type: 'scatter3d',
+//            color:'#1e1f26'
+          };
+        });
+        
+        return result;
+//        return {
+//            x:x,
+//            y:y,
+//            z:z,
+//            min:Math.min.apply(null,z),
+//            max:Math.max.apply(null,z),
+//            avg:z.length>0?z.reduce((previous, current) => current += previous)/z.length:0,
+//            id:data.length>0?data[0].id:0
+//        }
     }
     render(){
         return <Card>
@@ -136,9 +164,7 @@ class Chart extends Component{
                 {
                     this.state.fitness.filter(f=> f.checked).map(item=>{
                         let xyz=this.GetXYZ(item.name);
-                        return  <div><Plot
-        data={[
-          {
+                        xyz.push({
             type: 'mesh3d',
             x: fn[item.name].x,
             y: fn[item.name].y,
@@ -146,23 +172,10 @@ class Chart extends Component{
             intensity: fn[item.name].y.map((xy,i)=> fn.fitness[item.name]([xy,fn[item.name].x[i]])),
             colorscale: 'Jet', 
             opacity:1
-          },{
-            x: xyz.x,
-            y: xyz.y,
-            z: xyz.z,
-            showlegend:true,
-            name:'Experiment '.concat(xyz.id,'<br>','Min:',xyz.min,'<br>Max:',xyz.max,'<br>Avg:',xyz.avg),
-//            text:'alex',
-            marker:{size:5,/*color:'#1e1f26',*/borderColor:'white',line: {
-                  color: 'rgb(204, 204, 204)',
-                  width: 1
-            }},
-            mode: 'markers', 
-            type: 'scatter3d',
-//            color:'#1e1f26'
-          },
-                                    
-        ]}
+          });
+//                        console.log(xyz);
+                        return  <div><Plot
+        data={xyz}
         layout={ {width: 700, height: 500, title: item.name,legend: {
     x: -1,
     y: 1,
