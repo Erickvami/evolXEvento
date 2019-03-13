@@ -1,6 +1,7 @@
 const Genetic= require('./genetic.js');
 var amqp = require('amqplib/callback_api');
 module.exports={
+    
     //Async execution of Genetic Algorithm using promises
     run: async (opt)=>{
         return new Promise((resolve,reject)=>{

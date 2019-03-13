@@ -18,6 +18,10 @@ socket.on('connection',client=>{
         sendRabbitmq(JSON.stringify(msn));
         //console.log(msn.id);
     });
+    client.on('crossPop',async (msn)=>{
+//        sendRabbitmq(JSON.stringify(msn));
+        //console.log(msn.id);
+    });
     client.on('disconnect',()=>{
 //        console.log('client disconnect...',client.id);
         
@@ -41,7 +45,13 @@ conn.createChannel(function(err,ch){
 });
          });
     });
-} 
+}
+
+async function crossPop(populations){
+    return Promise(async (resolve)=>{
+        
+    });
+}
 
 
  amqp.connect('amqp://localhost',function(err,conn){

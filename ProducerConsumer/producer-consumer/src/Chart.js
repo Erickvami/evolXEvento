@@ -38,14 +38,14 @@ class Chart extends Component{
     componentDidMount(){
         const socket= socketIOClient('localhost:3001');
         socket.on('evolved',async (msn)=> {
+            this.setState({json:this.state.json.map(item=> item.id===msn.id? msn:item)});    
             if(!this.state.stop){
             this.Resend(msn);
             }
-            this.setState({json:this.state.json.map(item=> item.id===msn.id? msn:item)});    
         },this);
     }
     Resend(population){
-        console.log(population);
+        //console.log(population);
     }
     SliderInput(obj){
         return <label>{obj.label}:
@@ -110,11 +110,9 @@ class Chart extends Component{
     }
     GetXYZ(fitnessFunction){
         let data=this.state.json.filter(f=> f.fitness===fitnessFunction);
-//        let x=data.length>0?data[0].population.map(item=> item[0]):[];
-//        let y=data.length>0?data[0].population.map(item=> item[1]):[];
-//        let z=data.length>0?y.map((item,i)=> fn.fitness[fitnessFunction]([item,x[i]])):[];
         
-        let result= data.map(dt=>{
+        
+        return data.map(dt=>{
 //            console.log(dt);
             let x=dt.population.map(item=> item[0]);
             let y=dt.population.map(item=> item[1]);
@@ -139,17 +137,6 @@ class Chart extends Component{
 //            color:'#1e1f26'
           };
         });
-        
-        return result;
-//        return {
-//            x:x,
-//            y:y,
-//            z:z,
-//            min:Math.min.apply(null,z),
-//            max:Math.max.apply(null,z),
-//            avg:z.length>0?z.reduce((previous, current) => current += previous)/z.length:0,
-//            id:data.length>0?data[0].id:0
-//        }
     }
     render(){
         return <Card>
