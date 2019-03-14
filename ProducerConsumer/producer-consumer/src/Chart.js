@@ -21,6 +21,7 @@ class Chart extends Component{
             mutationPer:this.props.mutationPer,
             crossover:this.props.crossover,
             crossoverPer:this.props.crossoverPer,
+            crossoverType:this.props.crossoverType,
             optimizer:this.props.optimizer,
             size:this.props.size,
             id:1,
@@ -44,7 +45,7 @@ class Chart extends Component{
             }
         },this);
     }
-    Resend(population){
+    async Resend(population){
         //console.log(population);
     }
     SliderInput(obj){
@@ -75,7 +76,7 @@ class Chart extends Component{
     fitness:func,
     crossoverPer:this.props.random.crossoverPercentage?parseFloat(Math.random().toFixed(1)):this.props.crossoverPer,
     mutationPer:this.props.random.mutationPercentage?parseFloat(Math.random().toFixed(1)):this.props.mutationPer,
-    crossoverFunc:'uniform',
+    crossoverFunc:this.props.crossoverType,
     mutationFunc:'gaussian',
     id:fid+'-'+i,
     population:algorithm.generateRandomPopulation({
@@ -117,14 +118,13 @@ class Chart extends Component{
             let x=dt.population.map(item=> item[0]);
             let y=dt.population.map(item=> item[1]);
             let z=y.map((item,i)=> fn.fitness[fitnessFunction]([item,x[i]]));
-            
             return {
             x: x,
             y: y,
             z: z,
             showlegend:true,
             name:'Experiment '.concat(dt.id,'<br>',
-                                      'Min:',Math.min.apply(null,z),
+                                      'Min:',Math.min.apply(null,z),//Array.prototype.slice.call(z).sort((a,b)=> a-b)[0],////Array.prototype.slice.call(z).sort()[0],
                                       '<br>Max:',Math.max.apply(null,z),
                                       '<br>Avg:',z.length>0?z.reduce((previous, current) => current += previous)/z.length:0),
 //            text:'alex',
@@ -136,7 +136,7 @@ class Chart extends Component{
             type: 'scatter3d',
 //            color:'#1e1f26'
           };
-        });
+        },this);
     }
     render(){
         return <Card>
@@ -151,6 +151,13 @@ class Chart extends Component{
                 {
                     this.state.fitness.filter(f=> f.checked).map(item=>{
                         let xyz=this.GetXYZ(item.name);
+//                        if(xyz.length>0){
+//                        console.log(
+//                            xyz[0].z.map((zitem,zi)=> {return {x:xyz[0].x[zi],
+//                                y:xyz[0].y[zi],
+//                                    z:zitem}})
+//                            .sort((a,b)=> a.z-b.z));
+//                        }
                         xyz.push({
             type: 'mesh3d',
             x: fn[item.name].x,
@@ -163,7 +170,7 @@ class Chart extends Component{
 //                        console.log(xyz);
                         return  <div><Plot
         data={xyz}
-        layout={ {width: 700, height: 500, title: item.name,legend: {
+        layout={ {width: 700, height: 600, title: item.name,legend: {
     x: -1,
     y: 1,
         traceorder: 'normal',

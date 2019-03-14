@@ -17,9 +17,18 @@ module.exports={
               var mask= ParentOne.map(item=> Math.round(Math.random()));
               return [mask.map((item,i)=> parents[item][i]),mask.map((item,i)=> parents[item==1?0:1][i])];
           },
+            splittingPointUniform: (ParentOne,ParentTwo)=> {
+              var parents=[ParentOne,ParentTwo];
+              var mask= ParentOne.map(item=> Math.round(Math.random()));
+              return [mask.map((item,i)=> parents[item][i]),mask.map((item,i)=> item==1?parents.reduce((sum,num)=>sum[i]+num[i])/2:parents[item==1?0:1][i])];
+          },
           onePoint:(ParentOne,ParentTwo)=>{
               return [ParentOne.map((item,i)=> i<=Math.round(ParentOne.length/2)-1?item:ParentTwo[i]),ParentTwo.map((item,i)=> i<=Math.round(ParentTwo.length/2)-1?item:ParentOne[i])];
-          }
+          },
+          ring:(ParentOne,ParentTwo)=>{
+            let randomIndex= Math.round(Math.random()*(ParentOne.concat(ParentTwo).length-1));
+            return [ParentOne.concat(ParentTwo,ParentOne).slice(randomIndex,randomIndex+ParentTwo.length),ParentOne.concat(ParentTwo,ParentOne,ParentTwo).slice(randomIndex+ParentTwo.length,randomIndex+(ParentTwo.length*2))]
+        }
         };
         const mutations={
             gaussian:(entity)=>{

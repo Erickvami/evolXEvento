@@ -30,6 +30,10 @@ class ControlPanel extends Component{
                 types:['Minimize','Maximize'],
                 selected:'Minimize'
             },
+            crossoverType:{
+                types:['uniform','splittingPointUniform','onePoint','ring'],
+                selected:'uniform'
+            },
             iterations:100,
             population:10,
             mutationPercentage:0.2,
@@ -101,6 +105,8 @@ class ControlPanel extends Component{
                 
                 <ListGroup.Item>{this.DropdownInput({id:'crossover',label:'Crossover selection',checkbox:true})} 
                 </ListGroup.Item>
+                <ListGroup.Item>{this.DropdownInput({id:'crossoverType',label:'Crossover Type',checkbox:true})} 
+                </ListGroup.Item>
                 <ListGroup.Item>{this.SliderInput({label:'Crossover %',id:'crossoverPercentage',step:0.1,min:0.0,max:1.0,checkbox:true,percentage:true})}</ListGroup.Item>
                 <ListGroup.Item>{this.DropdownInput({id:'mutation',label:'Mutation selection',checkbox:true})}</ListGroup.Item>
                 <ListGroup.Item>{this.SliderInput({label:'Mutation %',id:'mutationPercentage',step:0.1,min:0.0,max:1.0,checkbox:true,percentage:true})}</ListGroup.Item>
@@ -116,6 +122,7 @@ class ControlPanel extends Component{
             mutationPer={this.state.mutationPercentage}
             crossover={this.state.crossover.selected}
             crossoverPer={this.state.crossoverPercentage}
+            crossoverType={this.state.crossoverType.selected}
             optimizer={this.state.optimizer.selected}
             size={this.state.individualSize}
             random={this.state.randomParams}
