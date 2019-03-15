@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {styles} from './ControlPanelStyles.js';
+//import {styles} from './ControlPanelStyles.js';
 import {ListGroup,
         Dropdown,
        Row,
@@ -35,7 +35,7 @@ class ControlPanel extends Component{
                 selected:'uniform'
             },
             iterations:100,
-            population:10,
+            population:100,
             mutationPercentage:0.2,
             crossoverPercentage:0.6,
             fitness:{
@@ -100,7 +100,7 @@ class ControlPanel extends Component{
                     <Card>
             <ListGroup>
                 <ListGroup.Item>{this.SliderInput({label:'Generations',id:'iterations',step:10,min:1,max:5000,checkbox:true})}</ListGroup.Item>
-                <ListGroup.Item>{this.SliderInput({label:'Population',id:'population',step:10,min:10,max:10000,checkbox:true})}</ListGroup.Item>
+                <ListGroup.Item>{this.SliderInput({label:'Population',id:'population',step:10,min:10,max:1500,checkbox:true})}</ListGroup.Item>
                 <ListGroup.Item>{this.SliderInput({label:'Individual size',id:'individualSize',step:2,min:2,max:40,checkbox:true})}</ListGroup.Item>
                 
                 <ListGroup.Item>{this.DropdownInput({id:'crossover',label:'Crossover selection',checkbox:true})} 

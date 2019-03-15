@@ -1,5 +1,6 @@
-var amqp = require('amqplib/callback_api');
+
 const genetic= require('./GA.js');
+var amqp = require('amqplib/callback_api');
 const async = require('async');
 
 amqp.connect('amqp://localhost', function(err, conn) {

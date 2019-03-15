@@ -15,12 +15,17 @@ var cross={
 
 socket.on('connection',client=>{
     client.on('message',async (msn)=>{
+        console.log('sending:=>',msn.id);
+        setTimeout(async ()=>{
         sendRabbitmq(JSON.stringify(msn));
+        },2000);
         //console.log(msn.id);
     });
     client.on('crossPop',async (msn)=>{
 //        sendRabbitmq(JSON.stringify(msn));
-        //console.log(msn.id);
+        crossPop(msn);
+        
+        
     });
     client.on('disconnect',()=>{
 //        console.log('client disconnect...',client.id);
@@ -47,9 +52,16 @@ conn.createChannel(function(err,ch){
     });
 }
 
-async function crossPop(populations){
-    return Promise(async (resolve)=>{
-        
+async function crossPop(msn){
+    return new Promise(async (resolve)=>{
+        setTimeout(async ()=>{
+        let crossedPop=cross.uniform(msn[0].population,msn[1].population);
+        crossedPop.forEach((pop,i)=>{
+            msn[i].population=pop;
+            console.log('resending=>:'+msn[i].id);
+            sendRabbitmq(JSON.stringify(msn[i]));
+        });    
+        },5000);
     });
 }
 
@@ -61,6 +73,7 @@ async function crossPop(populations){
 
         ch.consume('Evolved', function(msg) {
             var evolvedPop=JSON.parse(msg.content);
+            console.log('<=:receiving :',evolvedPop.id);
         socket.emit('evolved',evolvedPop);
             //here will comes a DB connection to creates a line of populations by experiment allowing us to cross them and keep a record of all experiments
             //sendRabbitmq(msg.content);

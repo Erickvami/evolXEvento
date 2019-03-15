@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import {
     Card,
     Button,
-    ButtonGroup,
-    Dropdown
+    ButtonGroup
        } from 'react-bootstrap';
 import Slider from 'react-rangeslider';
 import {algorithm} from './algorithm.js';
@@ -26,11 +25,14 @@ class Chart extends Component{
             size:this.props.size,
             id:1,
             random:this.props.random,
-            nMessages:1,
+            nMessages:2,
             json:[],
             fitness:[{name:'sphere',checked:true},{name:'rastringin',checked:false}],
             plotValues:[],
-            stop:true
+            stop:true,
+            resendLimit:0,
+            isRunning:false,
+            resend:false
         };
         this.Run= this.Run.bind(this);
         this.Stop= this.Stop.bind(this);
@@ -39,14 +41,30 @@ class Chart extends Component{
     componentDidMount(){
         const socket= socketIOClient('localhost:3001');
         socket.on('evolved',async (msn)=> {
-            this.setState({json:this.state.json.map(item=> item.id===msn.id? msn:item)});    
-            if(!this.state.stop){
-            this.Resend(msn);
+            this.setState({json:this.state.json.map(item=> item.id===msn.id? msn:item),resendLimit:this.state.resendLimit+1});    
+//            if(this.state.resendLimit===this.state.json.length){
+//               alert("first loop finished");
+//                rs = setInterval(()=>this.Resend(),4000);
+//               }
+            
+            if(this.state.stop ){//|| this.state.resendLimit>=(10)*this.state.nMessages){
+                clearInterval(rs);
+            this.setState({isRunning:false,resend:false});
             }
+//            if(!this.state.stop && this.state.resendLimit<(10)*this.state.nMessages){
+//            this.Resend(msn);
+//            }else{
+//                this.setState({isRunning:false});
+//            }
+
         },this);
     }
-    async Resend(population){
-        //console.log(population);
+    async Resend(){
+            
+        let randomfitness=this.state.fitness[Math.round(Math.random()*(this.state.fitness.filter(f=> f.checked).length-1))].name;
+        console.log("resending",randomfitness);
+            algorithm.resend([this.state.json.filter(f=> f.fitness===randomfitness)[Math.round(Math.random()*(this.state.nMessages-1))],this.state.json.filter(f=> f.fitness===randomfitness)[Math.round(Math.random()*(this.state.nMessages-1))]]);
+
     }
     SliderInput(obj){
         return <label>{obj.label}:
@@ -61,8 +79,9 @@ class Chart extends Component{
                 />
                     </label>;
     }
-    async Run(){
+    Run(){
         
+            
         let json= [];
         this.state.fitness.filter(f=> f.checked).map(item=> item.name).forEach((func,fid)=>{
              for(let i=1;i<=this.state.nMessages;i++){
@@ -87,21 +106,28 @@ class Chart extends Component{
         length:pSize
     })
         };
+                 
         json.push(message);
             
             //send message
-        algorithm.send(message);
+//        setTimeout(()=>{         
+//        algorithm.send(message);
+//        },5000);
         //finishing send message
-        this.setState({json:json,stop:false});
+        this.setState({json:json,stop:false,resendLimit:0,isRunning:true});
         }
         },this);
+        rs = setInterval(()=>this.Resend(),3000);
        
     }
     async Clear(){
+        
         this.setState({json:[],stop:true});
+        clearInterval(rs);
     }
     async Stop(){
         this.setState({stop:true});
+        clearInterval(rs);
     }
     Checks(obj){
         return <div>
@@ -186,10 +212,12 @@ class Chart extends Component{
       /></div>
                     },this)
                 }
-            
+            <label>{this.state.isRunning?"Running":"Stoped"}...</label>
             </div>
             <textarea style={{backgroundColor:'#282c34',color:'#f8d674',fontFamily:'Lucida Console',height:'100px',fontSize:11}} disabled value={JSON.stringify(this.state.json)}></textarea>
             </Card>;
     }
 }
+
+let rs=null;
 export default Chart;

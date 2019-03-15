@@ -15,5 +15,12 @@ export const algorithm={
         socket.emit('message', message);    
         });
         
+    },
+    resend:async (message)=>{
+        return new Promise(async ()=>{
+        const socket = socketIOClient('localhost:3001');
+        socket.emit('crossPop', message);    
+        });
+        
     }
 };
