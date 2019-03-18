@@ -32,7 +32,8 @@ class Chart extends Component{
             stop:true,
             resendLimit:0,
             isRunning:false,
-            resend:false
+            resend:false,
+            eye:[{x:1,y:1,z:-1},{x:1,y:1,z:-1}]
         };
         this.Run= this.Run.bind(this);
         this.Stop= this.Stop.bind(this);
@@ -41,27 +42,23 @@ class Chart extends Component{
     componentDidMount(){
         const socket= socketIOClient('localhost:3001');
         socket.on('evolved',async (msn)=> {
-            this.setState({json:this.state.json.map(item=> item.id===msn.id? msn:item),resendLimit:this.state.resendLimit+1});    
-//            if(this.state.resendLimit===this.state.json.length){
-//               alert("first loop finished");
-//                rs = setInterval(()=>this.Resend(),4000);
-//               }
+            this.setState({json:this.state.json.map(item=> item.id===msn.id? msn:item),
+                           resendLimit:this.state.resendLimit+1,
+                           eye:this.state.fitness.filter(f=> f.checked).map((_,i)=>this.refs['plot-'+i].props.layout.scene.camera.eye,this)
+                          });
+
             
             if(this.state.stop ){//|| this.state.resendLimit>=(10)*this.state.nMessages){
                 clearInterval(rs);
             this.setState({isRunning:false,resend:false});
             }
-//            if(!this.state.stop && this.state.resendLimit<(10)*this.state.nMessages){
-//            this.Resend(msn);
-//            }else{
-//                this.setState({isRunning:false});
-//            }
+
 
         },this);
     }
     async Resend(){
             
-        let randomfitness=this.state.fitness[Math.round(Math.random()*(this.state.fitness.filter(f=> f.checked).length-1))].name;
+        let randomfitness=this.state.fitness.filter(f=> f.checked)[Math.round(Math.random()*(this.state.fitness.filter(f=> f.checked).length-1))].name;
         console.log("resending",randomfitness);
             algorithm.resend([this.state.json.filter(f=> f.fitness===randomfitness)[Math.round(Math.random()*(this.state.nMessages-1))],this.state.json.filter(f=> f.fitness===randomfitness)[Math.round(Math.random()*(this.state.nMessages-1))]]);
 
@@ -125,7 +122,7 @@ class Chart extends Component{
         this.setState({json:[],stop:true});
         clearInterval(rs);
     }
-    async Stop(){
+    async Stop(){    
         this.setState({stop:true});
         clearInterval(rs);
     }
@@ -175,7 +172,7 @@ class Chart extends Component{
             {this.SliderInput({label:'Packages',id:'nMessages',step:1,min:1,max:10,})}
             <div>
                 {
-                    this.state.fitness.filter(f=> f.checked).map(item=>{
+                    this.state.fitness.filter(f=> f.checked).map((item,nitem)=>{
                         let xyz=this.GetXYZ(item.name);
 //                        if(xyz.length>0){
 //                        console.log(
@@ -195,8 +192,10 @@ class Chart extends Component{
           });
 //                        console.log(xyz);
                         return  <div><Plot
+        ref={'plot-'+nitem}                                 
         data={xyz}
-        layout={ {width: 700, height: 600, title: item.name,legend: {
+        layout={ {width: 700, height: 600,scene:{camera:{eye:this.state.eye[nitem]}},
+      title: item.name,legend: {
     x: -1,
     y: 1,
         traceorder: 'normal',
