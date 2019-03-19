@@ -49,7 +49,8 @@ class ControlPanel extends Component{
                 crossover:false,
                 mutation:false,
                 crossoverPercentage:false,
-                mutationPercentage:false
+                mutationPercentage:false,
+                crossoverType:false
             }
         };
     }
@@ -99,7 +100,7 @@ class ControlPanel extends Component{
                 <Col xs={3}>
                     <Card>
             <ListGroup>
-                <ListGroup.Item>{this.SliderInput({label:'Generations',id:'iterations',step:10,min:1,max:5000,checkbox:true})}</ListGroup.Item>
+                <ListGroup.Item>{this.SliderInput({label:'Generations',id:'iterations',step:10,min:1,max:2000,checkbox:true})}</ListGroup.Item>
                 <ListGroup.Item>{this.SliderInput({label:'Population',id:'population',step:10,min:10,max:1500,checkbox:true})}</ListGroup.Item>
                 <ListGroup.Item>{this.SliderInput({label:'Individual size',id:'individualSize',step:2,min:2,max:40,checkbox:true})}</ListGroup.Item>
                 
