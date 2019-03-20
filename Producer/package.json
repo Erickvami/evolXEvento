@@ -14,6 +14,7 @@
     "express": "^4.16.4",
     "firebase": "^5.8.6",
     "scaledrone-node-push": "^2.2.0",
-    "socket.io": "^2.2.0"
+    "socket.io": "^2.2.0",
+    "write-json-file": "^3.1.0"
   }
 }

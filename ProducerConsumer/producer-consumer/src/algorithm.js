@@ -22,5 +22,12 @@ export const algorithm={
         socket.emit('crossPop', message);    
         });
         
+    },
+    save:(json)=>{
+        return new Promise(async ()=> {
+            const socket = socketIOClient('localhost:3001');
+            socket.emit('Save', json);    
+        });
     }
+    
 };

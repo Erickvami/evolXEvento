@@ -1,6 +1,7 @@
 const server= require('http').createServer();
 const socket= require('socket.io')(server);
 var amqp= require('amqplib/callback_api');
+const writeJsonFile = require('write-json-file');
 
 var cross={
   singlePoint:(ParentOne,ParentTwo)=> {
@@ -19,13 +20,12 @@ socket.on('connection',client=>{
         setTimeout(async ()=>{
         sendRabbitmq(JSON.stringify(msn));
         },2000);
-        //console.log(msn.id);
     });
     client.on('crossPop',async (msn)=>{
-//        sendRabbitmq(JSON.stringify(msn));
         crossPop(msn);
-        
-        
+    });
+    client.on('Save',async (msn)=>{
+        await writeJsonFile('Experiments/Experiment_'.concat(new Date().toDateString(),',',new Date().getHours(),'',new Date().getMinutes(),'.json'), msn);
     });
     client.on('disconnect',()=>{
 //        console.log('client disconnect...',client.id);
@@ -75,8 +75,6 @@ async function crossPop(msn){
             var evolvedPop=JSON.parse(msg.content);
             console.log('<=:receiving :',evolvedPop.id);
         socket.emit('evolved',evolvedPop);
-            //here will comes a DB connection to creates a line of populations by experiment allowing us to cross them and keep a record of all experiments
-            //sendRabbitmq(msg.content);
         }, {noAck: true});
      });
  });
