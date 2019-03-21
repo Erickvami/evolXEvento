@@ -56,6 +56,7 @@ module.exports={
         genetic.configuration.iterations=opt.iterations; //Sets the number of generations
         genetic.configuration.size=opt.size; //Sets the population size
         genetic.fitness= fitness[opt.fitness];//Asigns the fitness function, the parameter is the number of function
+        genetic.configuration.webWorkers=true;
         console.log('+=========================================================+');
         console.log('Evolved population'.concat(opt.id,' on ',opt.iterations,' iterations:'));
         genetic.start(opt.id);//Run the GA

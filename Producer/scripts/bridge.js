@@ -6,7 +6,7 @@ const writeJsonFile = require('write-json-file');
 let globalPop=[];
 let resendLimit=0;
 let resends=0;
-
+let finished=true;
 const cross={
   singlePoint:(ParentOne,ParentTwo)=> {
       
@@ -21,6 +21,7 @@ const cross={
 //Receive messages from socket.io
 socket.on('connection',client=>{
     client.on('message',async (msn)=>{
+        finished=false;
         console.log('sending:=>',msn.id);
         globalPop.push(msn);
         setTimeout(async ()=>{
@@ -63,12 +64,15 @@ server.listen(3001,err=>{
             globalPop= globalPop.filter(f=> f.id!==evolvedPop.id);
             globalPop.push(evolvedPop);
             resends++;
-            if(resends<=resendLimit && resends!==0){
+            if(resends>resendLimit){
+                if(!finished){
+                    socket.emit('finished',true);
+                    Save();
+                }
+                finished=true;
+            }else if(resends<resendLimit && resends!==0 && !finished){
                 console.log(resends,resendLimit);
             crossPop(evolvedPop);    
-            }else if(resends>resendLimit){
-                socket.emit('finished',true);
-                Save();
             }
             
             console.log('<=:receiving :',evolvedPop.id);

@@ -50,26 +50,18 @@ class Chart extends Component{
                           });
                 nm++;
             console.log(nm+'-',this.state.resendLimit*this.state.nMessages);
-            //console.log();
-            if(this.state.isRunning){
-            //this.Resend();        
-            }
             if(this.state.stop || nm+this.state.nMessages>=(this.state.resendLimit*this.state.nMessages)){
-//                clearInterval(rs);
                 nm=0;
             this.setState({isRunning:false,resend:false});
             }
             
         },this);
-        socket.on('finished',async(msn)=>alert('Evolution finished!'));
+        socket.on('finished',async(msn)=>{
+            alert('Evolution finished!');
+            this.Save();  
+        });
     }
-    async Resend(){
-            
-        let randomfitness=this.state.fitness.filter(f=> f.checked)[Math.round(Math.random()*(this.state.fitness.filter(f=> f.checked).length-1))].name;
-        console.log("resending",randomfitness);
-            algorithm.resend([this.state.json.filter(f=> f.fitness===randomfitness)[Math.round(Math.random()*(this.state.nMessages-1))],this.state.json.filter(f=> f.fitness===randomfitness)[Math.round(Math.random()*(this.state.nMessages-1))]]);
-
-    }
+  
     SliderInput(obj){
         return <label>{obj.label}:
                     <Slider
@@ -114,9 +106,6 @@ class Chart extends Component{
         algorithm.send(message);         
         }
         },this);
-        
-        
-//        rs = setInterval(()=>this.Resend(),3000);
     }
     async Save(){
         const json= this.state.fitness.filter(f=> f.checked).map((_,i)=> { 
@@ -136,11 +125,9 @@ class Chart extends Component{
     }
     async Clear(){
         this.setState({json:[],stop:true});
-        clearInterval(rs);
     }
     async Stop(){    
         this.setState({stop:true});
-        clearInterval(rs);
     }
     Checks(obj){
         return <div>
@@ -183,7 +170,7 @@ class Chart extends Component{
             <Button onClick={this.Run} variant='success'>Run</Button>
             </ButtonGroup>
             {this.SliderInput({label:'Messages',id:'nMessages',step:1,min:1,max:10,})}
-            {this.SliderInput({label:'Resends',id:'resendLimit',step:1,min:1,max:100})}
+            {this.SliderInput({label:'Resends',id:'resendLimit',step:1,min:1,max:50})}
             <div>
                 {
                     this.state.fitness.filter(f=> f.checked).map((item,nitem)=>{
@@ -224,5 +211,4 @@ class Chart extends Component{
     }
 }
 
-let rs=null;
 export default Chart;
