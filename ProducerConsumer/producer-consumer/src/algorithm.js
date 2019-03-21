@@ -28,6 +28,11 @@ export const algorithm={
             const socket = socketIOClient('localhost:3001');
             socket.emit('Save', json);    
         });
+    },
+    clear:(resendLimit)=>{
+        return new Promise(async ()=> {
+            const socket = socketIOClient('localhost:3001');
+            socket.emit('clear', resendLimit);    
+        });
     }
-    
 };

@@ -52,15 +52,16 @@ class Chart extends Component{
             console.log(nm+'-',this.state.resendLimit*this.state.nMessages);
             //console.log();
             if(this.state.isRunning){
-            this.Resend();        
+            //this.Resend();        
             }
-            if(this.state.stop || nm>=(this.state.resendLimit*this.state.nMessages)){
+            if(this.state.stop || nm+this.state.nMessages>=(this.state.resendLimit*this.state.nMessages)){
 //                clearInterval(rs);
                 nm=0;
             this.setState({isRunning:false,resend:false});
             }
             
         },this);
+        socket.on('finished',async(msn)=>alert('Evolution finished!'));
     }
     async Resend(){
             
@@ -84,6 +85,7 @@ class Chart extends Component{
     }
     Run(){    
         let json= [];
+        algorithm.clear(this.state.resendLimit);
         this.state.fitness.filter(f=> f.checked).map(item=> item.name).forEach((func,fid)=>{
              for(let i=1;i<=this.state.nMessages;i++){
                  let pSize=this.props.random.population? Math.round(Math.random()*999)+1:this.props.population;
