@@ -2,7 +2,6 @@ const server= require('http').createServer();
 const socket= require('socket.io')(server);
 let amqp= require('amqplib/callback_api');
 let ga= require('./GA.js');
-const writeJsonFile = require('write-json-file');
 
 //Receive messages from socket.io
 socket.on('connection',client=>{

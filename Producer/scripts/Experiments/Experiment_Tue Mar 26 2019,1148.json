@@ -1,0 +1,12 @@
+[
+	{
+		"fn": "sphere",
+		"generations": "100",
+		"population": "100",
+		"dimensions": "40",
+		"crossoverPer": "0.6",
+		"mutationPer": "0.1",
+		"crossoverType": "uniform",
+		"results": []
+	}
+]

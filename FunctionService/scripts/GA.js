@@ -43,9 +43,7 @@ module.exports={
             return entity.map(item=> y1 * stddev + item);
             }
         }
-        
         genetic.entities= opt.population; //Asigns population
-        //this.genetic.usingWebWorker=true; //Activates a better perfomance using webworkers
         genetic.select1= Genetic.Select1[opt.mutation];//Sets the mutation method by its name
         genetic.select2= Genetic.Select2[opt.crossover];//Sets crossover method by its name
         genetic.configuration.crossover=opt.crossoverPer;
@@ -56,7 +54,7 @@ module.exports={
         genetic.configuration.iterations=opt.iterations; //Sets the number of generations
         genetic.configuration.size=opt.size; //Sets the population size
         genetic.fitness= fitness[opt.fitness];//Asigns the fitness function, the parameter is the number of function
-        genetic.configuration.webWorkers=true;
+        genetic.configuration.webWorkers=true;//Activates a better perfomance using webworkers
         console.log('+=========================================================+');
         console.log('Evolved population'.concat(opt.id,' on ',opt.iterations,' iterations:'));
         genetic.start(opt.id);//Run the GA

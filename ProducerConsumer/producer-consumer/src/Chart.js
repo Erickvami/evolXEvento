@@ -9,7 +9,7 @@ import {algorithm} from './algorithm.js';
 import socketIOClient from "socket.io-client";
 import Plot from 'react-plotly.js';
 import {fn} from './constants.js';
-let plotData=[];
+
 class Chart extends Component{
     constructor(props){
         super(props);
@@ -78,7 +78,7 @@ class Chart extends Component{
                     </label>;
     }
     Run(){    
-        let json= [];plotData=[];
+        let json= [];
         algorithm.clear({resendLimit:this.state.resendLimit,isLivePlot:this.state.isLivePlot});
         this.state.fitness.filter(f=> f.checked).map(item=> item.name).forEach((func,fid)=>{
              for(let i=1;i<=this.state.nMessages;i++){
@@ -119,7 +119,7 @@ class Chart extends Component{
             crossoverPer:this.props.random.crossoverPercentage?'random':this.props.crossoverPer.toString(),
             mutationPer:this.props.random.mutationPercentage?'random':this.props.mutationPer.toString(),
             crossoverType:this.props.random.crossoverType?'random':this.props.crossoverType.toString(),
-            results:this.refs['plot-'+i].props.data.filter(f=> f.type==='scatter3d').map(m=> m.name.replace(/<br>/g,','))
+            results:this.refs['plot-'+i].props.data.filter(f=> f.type==='scatter3d' || f.type==='box').map(m=> m.name.replace(/<br>/g,','))
             }
         },this);
 //        console.log(json);
@@ -143,7 +143,7 @@ class Chart extends Component{
             let fitnessVal=dt.population.map((item,i)=> fn.fitness[fitnessFunction](item));
             console.log(fitnessVal);
             let statistics={min:Math.min.apply(null,fitnessVal),max:Math.max.apply(null,fitnessVal),avg:dt.population.length>0?fitnessVal.reduce((previous, current) => current += previous)/dt.population.length:0};
-            if(dt.population[0].length==2){
+            if(dt.population[0].length===2){
                 
                 return {
                     x: dt.population.map(item=> item[0]),
@@ -164,8 +164,6 @@ class Chart extends Component{
             }else{
                 return {
                     y: fitnessVal,
-                    showlegend:true,
-                    name:'Experiment '.concat(dt.id),
                     type: 'box',
                     boxpoints: false,
                     boxmean: 'sd',
@@ -196,7 +194,7 @@ class Chart extends Component{
                 {
                     this.state.fitness.filter(f=> f.checked).map((item,nitem)=>{
                         let xyz=this.GetXYZ(item.name);
-                        if(this.props.size==2){
+                        if(this.props.size===2){
                             xyz.push({
                                 type: 'mesh3d',
                                 x: fn[item.name].x,
