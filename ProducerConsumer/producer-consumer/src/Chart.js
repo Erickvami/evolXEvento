@@ -9,7 +9,7 @@ import {algorithm} from './algorithm.js';
 import socketIOClient from "socket.io-client";
 import Plot from 'react-plotly.js';
 import {fn} from './constants.js';
-
+let plotData=[];
 class Chart extends Component{
     constructor(props){
         super(props);
@@ -32,8 +32,9 @@ class Chart extends Component{
             stop:true,
             resendLimit:3,
             isRunning:false,
-            resend:false,
-            eye:[{x:1,y:1,z:-1},{x:1,y:1,z:-1}]
+            eye:[{x:1,y:1,z:-1},{x:1,y:1,z:-1}],
+            is3d:true,
+            isLivePlot:true
         };
         this.Run= this.Run.bind(this);
         this.Stop= this.Stop.bind(this);
@@ -52,13 +53,14 @@ class Chart extends Component{
             console.log(nm+'-',this.state.resendLimit*this.state.nMessages);
             if(this.state.stop || nm+this.state.nMessages>=(this.state.resendLimit*this.state.nMessages)){
                 nm=0;
-            this.setState({isRunning:false,resend:false});
+            this.setState({isRunning:false});
+            //setTimeout(()=>this.Save(),4000); 
             }
             
         },this);
         socket.on('finished',async(msn)=>{
             alert('Evolution finished!');
-            this.Save();  
+            setTimeout(()=>this.Save(),4000); 
         });
     }
   
@@ -76,8 +78,8 @@ class Chart extends Component{
                     </label>;
     }
     Run(){    
-        let json= [];
-        algorithm.clear(this.state.resendLimit);
+        let json= [];plotData=[];
+        algorithm.clear({resendLimit:this.state.resendLimit,isLivePlot:this.state.isLivePlot});
         this.state.fitness.filter(f=> f.checked).map(item=> item.name).forEach((func,fid)=>{
              for(let i=1;i<=this.state.nMessages;i++){
                  let pSize=this.props.random.population? Math.round(Math.random()*999)+1:this.props.population;
@@ -102,7 +104,7 @@ class Chart extends Component{
     })
         };
         json.push(message);
-        this.setState({json:json,stop:false,isRunning:true});
+        this.setState({json:json,stop:false,isRunning:true,plotValues:[]});
         algorithm.send(message);         
         }
         },this);
@@ -138,26 +140,43 @@ class Chart extends Component{
     GetXYZ(fitnessFunction){
         let data=this.state.json.filter(f=> f.fitness===fitnessFunction);
         return data.map(dt=>{
-//            console.log(dt);
-            let x=dt.population.map(item=> item[0]);
-            let y=dt.population.map(item=> item[1]);
-            let z=y.map((item,i)=> fn.fitness[fitnessFunction]([item,x[i]]));
-            return {
-            x: x,
-            y: y,
-            z: z,
-            showlegend:true,
-            name:'Experiment '.concat(dt.id,'<br>',
-                                      'Min:',Math.min.apply(null,z),
-                                      '<br>Max:',Math.max.apply(null,z),
-                                      '<br>Avg:',z.length>0?z.reduce((previous, current) => current += previous)/z.length:0),
-            marker:{size:5,borderColor:'white',line: {
-                  color: 'rgb(204, 204, 204)',
-                  width: 1
-            }},
-            mode: 'markers', 
-            type: 'scatter3d',
-          };
+            let fitnessVal=dt.population.map((item,i)=> fn.fitness[fitnessFunction](item));
+            console.log(fitnessVal);
+            let statistics={min:Math.min.apply(null,fitnessVal),max:Math.max.apply(null,fitnessVal),avg:dt.population.length>0?fitnessVal.reduce((previous, current) => current += previous)/dt.population.length:0};
+            if(dt.population[0].length==2){
+                
+                return {
+                    x: dt.population.map(item=> item[0]),
+                    y: dt.population.map(item=> item[1]),
+                    z: fitnessVal,
+                    showlegend:true,
+                    name:'Experiment '.concat(dt.id,'<br>',
+                                              'Min:',statistics.min,
+                                              '<br>Max:',statistics.max,
+                                              '<br>Avg:',statistics.avg),
+                    marker:{size:5,borderColor:'white',line: {
+                          color: 'rgb(204, 204, 204)',
+                          width: 1
+                    }},
+                    mode: 'markers', 
+                    type: 'scatter3d',
+                  };
+            }else{
+                return {
+                    y: fitnessVal,
+                    showlegend:true,
+                    name:'Experiment '.concat(dt.id),
+                    type: 'box',
+                    boxpoints: false,
+                    boxmean: 'sd',
+                    showlegend:true,
+                    name:'Experiment '.concat(dt.id,'<br>',
+                                              'Min:',statistics.min,
+                                              '<br>Max:',statistics.max,
+                                              '<br>Avg:',statistics.avg)
+                  };
+            }
+            
         },this);
     }
     render(){
@@ -171,23 +190,28 @@ class Chart extends Component{
             </ButtonGroup>
             {this.SliderInput({label:'Messages',id:'nMessages',step:1,min:1,max:10,})}
             {this.SliderInput({label:'Resends',id:'resendLimit',step:1,min:1,max:50})}
+            <label><input type='checkbox' checked={this.state.isLivePlot} onClick={val=>
+            this.setState({isLivePlot:val.target.checked})} /> Live Plot</label>
             <div>
                 {
                     this.state.fitness.filter(f=> f.checked).map((item,nitem)=>{
                         let xyz=this.GetXYZ(item.name);
-                        xyz.push({
-            type: 'mesh3d',
-            x: fn[item.name].x,
-            y: fn[item.name].y,
-            z: fn[item.name].y.map((xy,i)=> fn.fitness[item.name]([xy,fn[item.name].x[i]])),
-            intensity: fn[item.name].y.map((xy,i)=> fn.fitness[item.name]([xy,fn[item.name].x[i]])),
-            colorscale: 'Jet', 
-            opacity:1
-          });
-                        return  <div key={nitem}><Plot
+                        if(this.props.size==2){
+                            xyz.push({
+                                type: 'mesh3d',
+                                x: fn[item.name].x,
+                                y: fn[item.name].y,
+                                z: fn[item.name].y.map((xy,i)=> fn.fitness[item.name]([xy,fn[item.name].x[i]])),
+                                intensity: fn[item.name].y.map((xy,i)=> fn.fitness[item.name]([xy,fn[item.name].x[i]])),
+                                colorscale: 'Jet', 
+                                opacity:1
+                              });
+                        }
+
+                        return  this.state.is3d?<div key={nitem}><Plot
         ref={'plot-'+nitem}                                 
         data={xyz}
-        layout={ {width: 700, height: 600,scene:{camera:{eye:this.state.eye[nitem]}},
+        layout={ {width: 800, height: 600,scene:{camera:{eye:this.state.eye[nitem]}},
                     title: item.name,legend: {
                                         x: -1,
                                         y: 1,
@@ -201,7 +225,7 @@ class Chart extends Component{
                     bordercolor: '#000',
                     borderwidth: 2
                 }} }
-      /></div>
+      /></div>:<div></div>
                     },this)
                 }
             <label>{this.state.isRunning?"Running":"Stoped"}...</label>

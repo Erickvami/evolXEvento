@@ -183,11 +183,6 @@ var Genetic = Genetic || (function(){
 				
 				this.entities = newPop;
 			}
-            //console.log(this.entities);
-                //console.log('identifier:'+ identifier);
-        
-                   
-            //////////////////////////////////////Here must send back the result 
             });
 			
 		}

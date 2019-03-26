@@ -29,10 +29,10 @@ export const algorithm={
             socket.emit('Save', json);    
         });
     },
-    clear:(resendLimit)=>{
+    clear:(params)=>{
         return new Promise(async ()=> {
             const socket = socketIOClient('localhost:3001');
-            socket.emit('clear', resendLimit);    
+            socket.emit('clear', params);    
         });
     }
 };
