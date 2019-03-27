@@ -119,7 +119,7 @@ class Chart extends Component{
             crossoverPer:this.props.random.crossoverPercentage?'random':this.props.crossoverPer.toString(),
             mutationPer:this.props.random.mutationPercentage?'random':this.props.mutationPer.toString(),
             crossoverType:this.props.random.crossoverType?'random':this.props.crossoverType.toString(),
-            results:this.refs['plot-'+i].props.data.filter(f=> f.type==='scatter3d' || f.type==='box').map(m=> m.name.replace(/<br>/g,','))
+            results:this.refs['plot-'+i].props.data.filter(f=> f.type==='scatter3d' || f.mode==='lines').map(m=> m.name.replace(/<br>/g,','))
             }
         },this);
 //        console.log(json);
@@ -163,10 +163,8 @@ class Chart extends Component{
                   };
             }else{
                 return {
-                    y: fitnessVal,
-                    type: 'box',
-                    boxpoints: false,
-                    boxmean: 'sd',
+                    y: fitnessVal.sort((a,b)=> dt.optimizer==='Minimize'? b-a:a-b),
+                    mode: 'lines',
                     showlegend:true,
                     name:'Experiment '.concat(dt.id,'<br>',
                                               'Min:',statistics.min,
@@ -174,7 +172,6 @@ class Chart extends Component{
                                               '<br>Avg:',statistics.avg)
                   };
             }
-            
         },this);
     }
     render(){

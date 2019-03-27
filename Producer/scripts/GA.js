@@ -47,12 +47,12 @@ getBest:(individuals)=>{
         sphere:(entity)=>{let total=0; entity.forEach(item=>{total+=Math.pow(item,2)});return total;},//[Σn^2]}
         rastringin:(entity)=>{let total=0; entity.forEach(item=>{total+=(Math.pow(item,2)-10*Math.cos(2*Math.PI*item))});return (10*entity.length)+total;}
         }
-let bestValues= individuals.map(item=> fitness[item.fitness](item.population[0]));
+return individuals.map(item=> [item.id,fitness[item.fitness](item.population[0])]).sort((a,b)=> a[1]-b[1])[individuals[0].optimizer=='Minimize'? 0:individuals.length-1]
 },
 crossPop:(evolvedPop)=>{//cross the individuals and sends them to evolve
     return new Promise(async ()=>{
         setTimeout(async ()=>{
-            let selectedPop=[evolvedPop,module.exports.globalPop.filter(f=> f.fitness===evolvedPop.fitness)[Math.round(Math.random()*(module.exports.globalPop.filter(f=> f.fitness===evolvedPop.fitness).length-1))]];
+            let selectedPop=[evolvedPop,module.exports.globalPop.filter(fil=> fil.id===module.exports.getBest(module.exports.globalPop.filter(f=> f.fitness===evolvedPop.fitness))[0])[0]];
             let crossedPop=module.exports.cross.uniform(selectedPop[0].population,selectedPop[1].population);
             crossedPop.forEach((pop,i)=>{
                 selectedPop[i].population=pop;

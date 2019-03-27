@@ -1,0 +1,15 @@
+[
+	{
+		"fn": "sphere",
+		"generations": "100",
+		"population": "100",
+		"dimensions": "6",
+		"crossoverPer": "0.6",
+		"mutationPer": "0.2",
+		"crossoverType": "uniform",
+		"results": [
+			"Experiment 0-1,Min:0.0000012464521999053833,Max:50.228062915775155,Avg:1.5296687084274339",
+			"Experiment 0-2,Min:0.000005580474163956562,Max:26.918184369499087,Avg:0.869953947419852"
+		]
+	}
+]
