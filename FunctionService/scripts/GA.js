@@ -39,7 +39,7 @@ module.exports={
                 if(x2==0)
                     x2=1;
                 let y1 = Math.sqrt(-2.0 * Math.log(x1)) * Math.cos(2.0 * Math.PI * (x2+0.001));
-                let stddev=Math.random()*2;
+                let stddev=Math.random()*Math.random();
             return entity.map(item=> y1 * stddev + item);
             }
         }

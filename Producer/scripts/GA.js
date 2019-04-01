@@ -47,7 +47,7 @@ getBest:(individuals)=>{
         sphere:(entity)=>{let total=0; entity.forEach(item=>{total+=Math.pow(item,2)});return total;},//[Σn^2]}
         rastringin:(entity)=>{let total=0; entity.forEach(item=>{total+=(Math.pow(item,2)-10*Math.cos(2*Math.PI*item))});return (10*entity.length)+total;}
         }
-return individuals.map(item=> [item.id,fitness[item.fitness](item.population[0])]).sort((a,b)=> a[1]-b[1])[individuals[0].optimizer=='Minimize'? 0:individuals.length-1]
+return individuals.map(item=> [item.id,fitness[item.fitness](item.population[0])]).sort((a,b)=> a[1]-b[1])[individuals[0].optimizer=='Minimize'? Math.round(Math.random()*2):(individuals.length-4)+Math.round(Math.random()*2)]
 },
 crossPop:(evolvedPop)=>{//cross the individuals and sends them to evolve
     return new Promise(async ()=>{

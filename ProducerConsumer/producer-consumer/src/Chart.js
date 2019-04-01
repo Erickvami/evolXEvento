@@ -10,6 +10,8 @@ import socketIOClient from "socket.io-client";
 import Plot from 'react-plotly.js';
 import {fn} from './constants.js';
 
+let lines=[];
+
 class Chart extends Component{
     constructor(props){
         super(props);
@@ -63,7 +65,6 @@ class Chart extends Component{
             setTimeout(()=>this.Save(),4000); 
         });
     }
-  
     SliderInput(obj){
         return <label>{obj.label}:
                     <Slider
@@ -78,7 +79,7 @@ class Chart extends Component{
                     </label>;
     }
     Run(){    
-        let json= [];
+        let json= [];lines=[];
         algorithm.clear({resendLimit:this.state.resendLimit,isLivePlot:this.state.isLivePlot});
         this.state.fitness.filter(f=> f.checked).map(item=> item.name).forEach((func,fid)=>{
              for(let i=1;i<=this.state.nMessages;i++){
@@ -103,6 +104,7 @@ class Chart extends Component{
         length:pSize
     })
         };
+        
         json.push(message);
         this.setState({json:json,stop:false,isRunning:true,plotValues:[]});
         algorithm.send(message);         
@@ -150,7 +152,7 @@ class Chart extends Component{
                     y: dt.population.map(item=> item[1]),
                     z: fitnessVal,
                     showlegend:true,
-                    name:'Experiment '.concat(dt.id,'<br>',
+                    name:'Population '.concat(dt.id,'<br>',
                                               'Min:',statistics.min,
                                               '<br>Max:',statistics.max,
                                               '<br>Avg:',statistics.avg),
@@ -162,10 +164,19 @@ class Chart extends Component{
                     type: 'scatter3d',
                   };
             }else{
+                // if(lines.length>=this.state.nMessages){
+                //     lines[lines.findIndex(fi=> fi.id===dt.id)].pop=lines.filter(f=> f.id===dt.id).map(item=> item.pop)[0].concat([statistics[dt.optimizer==='Minimize'? 'min':'max']]);
+                // }else{
+                //     lines.push({id:dt.id,pop:[]});
+                // }
+                
+                //  console.log('lines:',lines);
                 return {
                     y: fitnessVal.sort((a,b)=> dt.optimizer==='Minimize'? b-a:a-b),
+                    // y: lines.filter(f=> f.id===dt.id).map(item=> item.pop)[0],
                     mode: 'lines',
                     showlegend:true,
+                    id:dt.id,
                     name:'Experiment '.concat(dt.id,'<br>',
                                               'Min:',statistics.min,
                                               '<br>Max:',statistics.max,

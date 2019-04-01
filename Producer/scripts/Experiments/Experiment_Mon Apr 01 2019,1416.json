@@ -1,0 +1,23 @@
+[
+	{
+		"fn": "rastringin",
+		"generations": "100",
+		"population": "400",
+		"dimensions": "2",
+		"crossoverPer": "0.7",
+		"mutationPer": "0.1",
+		"crossoverType": "splittingPointUniform",
+		"results": [
+			"Population 0-1,Min:0,Max:40.39045779501289,Avg:0.684330727003139",
+			"Population 0-2,Min:0,Max:40.48389375269314,Avg:1.1432309919564192",
+			"Population 0-3,Min:0,Max:40.737003651440915,Avg:1.067696574657683",
+			"Population 0-4,Min:0,Max:40.312266732677024,Avg:1.263504931364797",
+			"Population 0-5,Min:0,Max:42.85925625144828,Avg:0.9019381852431654",
+			"Population 0-6,Min:0,Max:40.31309428508875,Avg:0.930280425994518",
+			"Population 0-7,Min:0,Max:40.42860626506969,Avg:1.027223293225777",
+			"Population 0-8,Min:0,Max:38.0174212304534,Avg:0.7658727111443927",
+			"Population 0-9,Min:0,Max:40.19985408390134,Avg:1.2215271036207411",
+			"Population 0-10,Min:3.552713678800501e-15,Max:40.20584531904847,Avg:1.0076053928324595"
+		]
+	}
+]

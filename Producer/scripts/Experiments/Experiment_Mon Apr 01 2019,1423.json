@@ -1,0 +1,44 @@
+[
+	{
+		"fn": "sphere",
+		"generations": "100",
+		"population": "400",
+		"dimensions": "2",
+		"crossoverPer": "0.7",
+		"mutationPer": "0.1",
+		"crossoverType": "splittingPointUniform",
+		"results": [
+			"Population 0-1,Min:4.7385044546567024e-48,Max:2.932642761335312,Avg:0.015007452020959348",
+			"Population 0-2,Min:1.0232329390196913e-49,Max:3.690702232183435,Avg:0.02699080592732065",
+			"Population 0-3,Min:3.43958741405219e-95,Max:5.821020163606745,Avg:0.04389912126066489",
+			"Population 0-4,Min:1.953592592442399e-93,Max:3.024167099022006,Avg:0.027187756442242302",
+			"Population 0-5,Min:1.2914335007667986e-91,Max:2.8221976234976855,Avg:0.024311323302917562",
+			"Population 0-6,Min:4.35654128191996e-50,Max:4.7356086987635715,Avg:0.020760647474978793",
+			"Population 0-7,Min:3.7987955976713126e-93,Max:2.440316897630194,Avg:0.02116743403825158",
+			"Population 0-8,Min:3.627641343770114e-42,Max:0.8492608331618856,Avg:0.008776700161558387",
+			"Population 0-9,Min:9.656424906692005e-95,Max:2.586749379867506,Avg:0.013584349758592455",
+			"Population 0-10,Min:2.8975961817439956e-47,Max:2.4993533514576605,Avg:0.0229649557320712"
+		]
+	},
+	{
+		"fn": "rastringin",
+		"generations": "100",
+		"population": "400",
+		"dimensions": "2",
+		"crossoverPer": "0.7",
+		"mutationPer": "0.1",
+		"crossoverType": "splittingPointUniform",
+		"results": [
+			"Population 1-1,Min:0,Max:40.41092232132095,Avg:1.2817219213363245",
+			"Population 1-2,Min:0,Max:39.99235575822722,Avg:0.6260503895803268",
+			"Population 1-3,Min:0,Max:43.87900277205394,Avg:0.8955765902504494",
+			"Population 1-4,Min:0,Max:40.40077046636426,Avg:1.311985985511597",
+			"Population 1-5,Min:0,Max:43.5119173301962,Avg:0.7823940710666686",
+			"Population 1-6,Min:0,Max:39.08979131013567,Avg:0.8955688707592099",
+			"Population 1-7,Min:0,Max:40.2785207355964,Avg:0.993510662106608",
+			"Population 1-8,Min:0,Max:35.685750796429666,Avg:0.7384714405786543",
+			"Population 1-9,Min:0,Max:39.788465411246094,Avg:0.947664209943613",
+			"Population 1-10,Min:0,Max:40.416824109326804,Avg:0.6397870991898167"
+		]
+	}
+]
