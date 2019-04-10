@@ -10,7 +10,7 @@ socket.on('connection',client=>{
         console.log('sending:=>',msn.id);
         ga.globalPop.push(msn);
         setTimeout(async ()=>{
-        ga.sendRabbitmq(JSON.stringify(msn));
+        ga.sendRabbitmq(JSON.stringify(msn),msn.algorithm);
         },2000);
     });
     client.on('clear',async (params)=>{
@@ -67,7 +67,7 @@ server.listen(3001,err=>{
             ga.crossPop(evolvedPop);    
             }
             if(ga.isLivePlot){
-                console.log(ga.globalPop);
+                // console.log(ga.globalPop);
                 socket.emit('evolved',evolvedPop);
             }
             console.log('<=:receiving :',evolvedPop.id);

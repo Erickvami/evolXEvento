@@ -12,11 +12,11 @@ SaveMessage: async (msn)=> {//saves the experiment data
     await writeJsonFile('Experiments/Experiment_'.concat(new Date().toDateString(),',',new Date().getHours(),'',new Date().getMinutes(),'.json'), msn);
     await writeJsonFile('Experiments/GlobalPop_'.concat(new Date().toDateString(),',',new Date().getHours(),'',new Date().getMinutes(),'.json'), module.exports.globalPop);
 },
-sendRabbitmq:(message)=>{//sends one individual population to evolve
+sendRabbitmq:(message,channel)=>{//sends one individual population to evolve
     return new Promise(async ()=>{
          amqp.connect('amqp://localhost',function(err,conn){
     conn.createChannel(function(err,ch){
-    var q= 'GA';//channel's name 
+    var q= channel;//channel's name 
     ch.assertQueue(q,{durable:false});
     ch.sendToQueue(q,new Buffer.from(message));
     });
@@ -49,7 +49,7 @@ crossPop:(evolvedPop)=>{//cross the individuals and sends them to evolve
             crossedPop.forEach((pop,i)=>{
                 selectedPop[i].population=pop;
                 console.log('resending=>:'+selectedPop[i].id);
-                module.exports.sendRabbitmq(JSON.stringify(selectedPop[i]));
+                module.exports.sendRabbitmq(JSON.stringify(selectedPop[i]),selectedPop[i].algorithm);
             },module.exports);    
         },5000);
     },module.exports);

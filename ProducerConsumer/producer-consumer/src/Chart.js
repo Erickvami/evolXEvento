@@ -93,7 +93,7 @@ class Chart extends Component{
     iterations:this.props.random.iterations? Math.round(Math.random()*1999)+1:this.props.iterations,
     size:pSize,
     fitness:func,
-    id:fid+'-'+i,
+    id:(i%2? 'ga':'pso')+'-'+fid+'-'+i,
     population:algorithm.generateRandomPopulation({
         fitness:func,
         size:this.props.random.individualSize? Math.round(Math.random()*39)+1:this.props.size,
