@@ -38,6 +38,9 @@ class ControlPanel extends Component{
             population:100,
             mutationPercentage:0.2,
             crossoverPercentage:0.6,
+            socialFactor:2.05,
+            individualFactor:2.05,
+            inertiaFactor:1,
             fitness:{
                 types:['sphere'],
                 selected:'sphere'
@@ -50,7 +53,10 @@ class ControlPanel extends Component{
                 mutation:false,
                 crossoverPercentage:false,
                 mutationPercentage:false,
-                crossoverType:false
+                crossoverType:false,
+                socialFactor:false,
+                individualFactor:false,
+                inertiaFactor:false
             }
         };
     }
@@ -62,7 +68,7 @@ class ControlPanel extends Component{
                   max={obj.max}
                   tooltip={true}
                   value={this.state[obj.id]}
-                  onChange={value=> obj.percentage? this.setState({[obj.id]:value.toFixed(1)}):this.setState({[obj.id]:value})}
+                  onChange={value=> obj.percentage? this.setState({[obj.id]:value.toFixed(2)}):this.setState({[obj.id]:value})}
                   labels={{10:this.state[obj.id]}}
                 />
             {this.RandomCheckBox(obj.checkbox,obj.id)}
@@ -113,6 +119,9 @@ class ControlPanel extends Component{
                 <ListGroup.Item>{this.DropdownInput({id:'mutation',label:'Mutation selection',checkbox:true})}</ListGroup.Item>
                 <ListGroup.Item>{this.SliderInput({label:'Mutation %',id:'mutationPercentage',step:0.1,min:0.0,max:1.0,checkbox:true,percentage:true})}</ListGroup.Item>
                 <ListGroup.Item style={{background:'#d1d1d1'}}><label>PSO Parameters</label></ListGroup.Item>
+                <ListGroup.Item>{this.SliderInput({label:'Social factor',id:'socialFactor',step:0.01,min:0.0,max:4.0,checkbox:true,percentage:true})}</ListGroup.Item>
+                <ListGroup.Item>{this.SliderInput({label:'Individual factor',id:'individualFactor',step:0.01,min:0.0,max:4.0,checkbox:true,percentage:true})}</ListGroup.Item>
+                <ListGroup.Item>{this.SliderInput({label:'Inertia factor',id:'inertiaFactor',step:0.01,min:0.0,max:2.0,checkbox:true,percentage:true})}</ListGroup.Item>
             </ListGroup>
         </Card>
                 </Col>
@@ -127,6 +136,9 @@ class ControlPanel extends Component{
             crossoverType={this.state.crossoverType.selected}
             optimizer={this.state.optimizer.selected}
             size={this.state.individualSize}
+            socialFactor={this.state.socialFactor}
+            individualFactor={this.state.individualFactor}
+            inertiaFactor={this.state.inertiaFactor}
             random={this.state.randomParams}
         />
                 </Col>

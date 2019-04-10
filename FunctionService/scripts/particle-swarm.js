@@ -47,18 +47,23 @@ var ParticleSwarmOptimizer = /** @class */ (function () {
             }
             this.updatePopulation(population, solution.globalBestPosition, iteration);
         }
-        return {best:solution,pop:population};
+        return solution;
     };
     ParticleSwarmOptimizer.prototype.createAndEvaluatePopulation = function () {
         var population = [];
-        console.log(this.options.all);
-        
         for (var i = 0; i < this.options.populationSize; i += 1) {
-            var particle = this.createParticle();
+            // var particle = this.createParticle();
+            var particle= new Particle();
+            this.options.population[i].forEach((item,index)=>{
+                particle.position.push(item);
+                particle.velocity.push(Util.getRandomArbitrary(this.options.minVelocity[index], this.options.maxVelocity[index], this.options.randomFunction));
+                return particle;
+            });
+            //  console.log(particle);
             this.evaluateParticle(particle);
             population.push(particle);
         }
-        // console.log(population);
+        //  console.log(population);
         return population;
     };
     ParticleSwarmOptimizer.prototype.getGlobalBestPositionAndFitness = function (population) {
@@ -66,7 +71,7 @@ var ParticleSwarmOptimizer = /** @class */ (function () {
             throw new Error('Population size is 0!');
         }
         var particle = Util.minBy(population, 'bestFitness');
-        return { globalBestPosition: particle.bestPosition, globalBestFitness: particle.bestFitness };
+        return {pop:population.map(part=> part.bestPosition), globalBestPosition: particle.bestPosition, globalBestFitness: particle.bestFitness };
     };
     ParticleSwarmOptimizer.prototype.notifyListeners = function (meta) {
         if (!this.options.callbackFn) {

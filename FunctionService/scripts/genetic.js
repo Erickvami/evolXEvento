@@ -200,7 +200,7 @@ var Genetic = Genetic || (function(){
 				postMessage(response);
 			} else {
 				// self declared outside of scope
-				self.notification(response.pop.map(Serialization.parse), response.generation, response.stats, response.isFinished);
+				this.notification(response.pop.map(Serialization.parse), response.generation, response.stats, response.isFinished);
 			}
 			
 		};

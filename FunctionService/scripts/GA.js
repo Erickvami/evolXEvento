@@ -1,9 +1,7 @@
-const Genetic= require('./genetic.js');
-var amqp = require('amqplib/callback_api');
-module.exports={
-    //Async execution of Genetic Algorithm using promises
-    run: async (opt)=>{
+module.exports=(opt)=>{
         return new Promise(()=>{
+        const Genetic= require('./genetic.js');
+        var amqp = require('amqplib/callback_api');
         let genetic=Genetic.create();//creates new GA object
         genetic.entities= opt.population; //Asigns population
         genetic.select1= Genetic.Select1[opt.mutation];//Sets the mutation method by its name
@@ -50,10 +48,11 @@ module.exports={
         genetic.configuration.iterations=opt.iterations; //Sets the number of generations
         genetic.configuration.size=opt.size; //Sets the population size
         genetic.configuration.webWorkers=true;//Activates a better perfomance using webworkers
+        genetic.notification=(pop,gen,stats,isFinished)=> {if(isFinished) console.log({pop:pop,gen:gen,starts:stats});opt.best=stats.maximum;};
         console.log('+=========================================================+');
-        console.log('Evolved population'.concat(opt.id,' on ',opt.iterations,' iterations:'));
+        console.log('Population : '.concat(opt.id));
         genetic.start(opt.id);//Run the GA
-        console.log(genetic);
+        // console.log(genetic);
             opt.population=genetic.entities;
         amqp.connect('amqp://localhost',function(err,conn){
                         conn.createChannel(function(err,ch){
@@ -64,4 +63,3 @@ module.exports={
                      });
         });
     }
-};

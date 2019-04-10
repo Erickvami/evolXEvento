@@ -25,6 +25,9 @@ class Chart extends Component{
             crossoverType:this.props.crossoverType,
             optimizer:this.props.optimizer,
             size:this.props.size,
+            socialFactor:this.props.socialFactor,
+            individualFactor:this.props.individualFactor,
+            inertiaFactor:this.props.inertiaFactor,
             id:1,
             random:this.props.random,
             nMessages:2,
@@ -85,16 +88,11 @@ class Chart extends Component{
              for(let i=1;i<=this.state.nMessages;i++){
                  let pSize=this.props.random.population? Math.round(Math.random()*999)+1:this.props.population;
             let message={
-    mutation:this.props.mutation,
-    crossover:this.props.crossover,
+    algorithm:i%2? 'ga':'ga',
     optimizer:this.props.optimizer,
     iterations:this.props.random.iterations? Math.round(Math.random()*1999)+1:this.props.iterations,
     size:pSize,
     fitness:func,
-    crossoverPer:this.props.random.crossoverPercentage?parseFloat(Math.random().toFixed(1)):this.props.crossoverPer,
-    mutationPer:this.props.random.mutationPercentage?parseFloat(Math.random().toFixed(1)):this.props.mutationPer,
-    crossoverFunc:this.props.random.crossoverType?['uniform','splittingPointUniform','onePoint','ring'][Math.round(Math.random()*3)]:this.props.crossoverType,
-    mutationFunc:'gaussian',
     id:fid+'-'+i,
     population:algorithm.generateRandomPopulation({
         fitness:func,
@@ -104,6 +102,19 @@ class Chart extends Component{
         length:pSize
     })
         };
+
+        if(message.algorithm==='ga'){
+            message.mutation=this.props.mutation;
+            message.crossover=this.props.crossover;
+            message.crossoverPer=this.props.random.crossoverPercentage?parseFloat(Math.random().toFixed(1)):this.props.crossoverPer;
+            message.mutationPer=this.props.random.mutationPercentage?parseFloat(Math.random().toFixed(1)):this.props.mutationPer;
+            message.crossoverFunc=this.props.random.crossoverType?['uniform','splittingPointUniform','onePoint','ring'][Math.round(Math.random()*3)]:this.props.crossoverType;
+            message.mutationFunc='gaussian';
+        }else{
+            message.socialFactor= this.props.random.socialFactor? parseFloat(Math.random().toFixed(1)*3):this.props.socialFactor;
+            message.individualFactor= this.props.random.individualFactor? parseFloat(Math.random().toFixed(1)*3):this.props.individualFactor;
+            message.inertiaFactor= this.props.random.inertiaFactor? parseFloat(Math.random().toFixed(1)*3):this.props.inertiaFactor;
+        }
         
         json.push(message);
         this.setState({json:json,stop:false,isRunning:true,plotValues:[]});

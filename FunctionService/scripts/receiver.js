@@ -13,7 +13,7 @@ amqp.connect('amqp://localhost', function(err, conn) {
       
       ch.consume(q, function(msg) {
 //        console.log(" [x] Received %s", JSON.parse(msg.content));
-        genetic.run(JSON.parse(msg.content));    
+        genetic(JSON.parse(msg.content));    
       }, {noAck: true});
       
   });

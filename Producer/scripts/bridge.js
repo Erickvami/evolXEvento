@@ -44,9 +44,8 @@ server.listen(3001,err=>{
      conn.createChannel(function(err,ch){
         var q= 'Evolved';//channel's name 
         ch.assertQueue(q,{durable:false});
-        ch.consume('Evolved', function(msg) {
+        ch.consume('Evolved', function(msg) {            
             var evolvedPop=JSON.parse(msg.content);
-            //console.log(evolvedPop);
             ga.globalPop= ga.globalPop.filter(f=> f.id!==evolvedPop.id);
             ga.globalPop.push(evolvedPop);
             ga.resends++;
@@ -68,6 +67,7 @@ server.listen(3001,err=>{
             ga.crossPop(evolvedPop);    
             }
             if(ga.isLivePlot){
+                console.log(ga.globalPop);
                 socket.emit('evolved',evolvedPop);
             }
             console.log('<=:receiving :',evolvedPop.id);

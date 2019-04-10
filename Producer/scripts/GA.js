@@ -25,10 +25,7 @@ sendRabbitmq:(message)=>{//sends one individual population to evolve
     },
 getBest:(individuals,take)=>{
 return individuals
-.map(item=> [item.id,({// all fitness function definitions
-    sphere:(entity)=>{let total=0; entity.forEach(item=>{total+=Math.pow(item,2)});return total;},//[Σn^2]}
-    rastringin:(entity)=>{let total=0; entity.forEach(item=>{total+=(Math.pow(item,2)-10*Math.cos(2*Math.PI*item))});return (10*entity.length)+total;}
-    })[item.fitness](item.population[0])])
+.map(item=> [item.id,item.best])
 .sort((a,b)=> a[1]-b[1])[individuals[0].optimizer==='Minimize'? 0+take:individuals.length-1-take];
 },
 crossPop:(evolvedPop)=>{//cross the individuals and sends them to evolve
