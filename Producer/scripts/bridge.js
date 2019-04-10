@@ -46,6 +46,7 @@ server.listen(3001,err=>{
         ch.assertQueue(q,{durable:false});
         ch.consume('Evolved', function(msg) {
             var evolvedPop=JSON.parse(msg.content);
+            //console.log(evolvedPop);
             ga.globalPop= ga.globalPop.filter(f=> f.id!==evolvedPop.id);
             ga.globalPop.push(evolvedPop);
             ga.resends++;

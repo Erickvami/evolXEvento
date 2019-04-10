@@ -1,0 +1,15 @@
+[
+	{
+		"fn": "rastringin",
+		"generations": "100",
+		"population": "100",
+		"dimensions": "2",
+		"crossoverPer": "0.6",
+		"mutationPer": "0.2",
+		"crossoverType": "uniform",
+		"results": [
+			"Population 0-1,Min:2.442554603021563e-9,Max:32.08219263764078,Avg:2.994926059597379",
+			"Population 0-2,Min:9.504681486305344e-10,Max:40.38117885620791,Avg:1.7328780809737543"
+		]
+	}
+]
