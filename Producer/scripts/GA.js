@@ -24,8 +24,7 @@ sendRabbitmq:(message,channel)=>{//sends one individual population to evolve
     });
     },
 getBest:(individuals,take)=>{
-return individuals
-.map(item=> [item.id,item.best])
+return individuals.map(item=> [item.id,item.best])
 .sort((a,b)=> a[1]-b[1])[individuals[0].optimizer==='Minimize'? 0+take:individuals.length-1-take];
 },
 crossPop:(evolvedPop)=>{//cross the individuals and sends them to evolve

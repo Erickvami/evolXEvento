@@ -52,7 +52,6 @@ module.exports=(opt)=>{
         console.log('+=========================================================+');
         console.log('Population : '.concat(opt.id));
         genetic.start(opt.id);//Run the GA
-        // console.log(genetic);
             opt.population=genetic.entities;
         amqp.connect('amqp://localhost',function(err,conn){
                         conn.createChannel(function(err,ch){
