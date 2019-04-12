@@ -1,0 +1,18 @@
+[
+	{
+		"fn": "rastringin",
+		"generations": "321",
+		"population": "100",
+		"dimensions": "40",
+		"crossoverPer": "0.6",
+		"mutationPer": "0.2",
+		"crossoverType": "uniform",
+		"results": [
+			"Experiment ga-0-1,Min:1.9899812559979182,Max:760.7024056785771,Avg:53.50141318381368",
+			"Experiment pso-0-2,Min:4.97570561683392,Max:811.1421990684115,Avg:31.285435289301667",
+			"Experiment ga-0-3,Min:1.9900915361870943,Max:633.4618748785063,Avg:26.309596087665177",
+			"Experiment pso-0-4,Min:6.964980926457713,Max:797.328588938694,Avg:47.61403443581045",
+			"Experiment ga-0-5,Min:5.970376247245383,Max:523.58585647432,Avg:28.46625404961943"
+		]
+	}
+]

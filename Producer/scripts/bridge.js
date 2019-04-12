@@ -57,8 +57,8 @@ server.listen(3001,err=>{
                             socket.emit('evolved',item);
                         });
                     }
-                    ch.purgeQueue(q);
-                    ch.purgeQueue('GA');
+                    // ch.purgeQueue(q);
+                    // ch.purgeQueue('GA');
                     ga.Save();
                 }
                 ga.finished=true;
