@@ -6,13 +6,18 @@ function insert(myobj){
         if (err) throw err;
         var dbo = db.db("myfirstdb");
             //   var myobj = { name: "val"+i, value: i };
-              dbo.collection("pop").insertOne(myobj, function(err, res) {
+              dbo.collection("test").insertMany(myobj, function(err, res) {
                 if (err) throw err;
-                console.log("1 document inserted");
+                console.log(myobj.length+" documents inserted");
                 db.close();    
               });
       }); 
 }
+// let x=[];
+// for(let i=0;i<=10;i++){
+// x.push({_id:'ga-'+i ,name: "val"+Math.random(), value: i });
+// }
+// insert(x);
 
 // for(let i=0;i<=10;i++){
 //     // population.push({ name: "val"+Math.random(), value: Math.random() });
@@ -36,7 +41,7 @@ function insert(myobj){
 MongoClient.connect(url, { useNewUrlParser: true },function(err, db) {
     if (err) throw err;
     var dbo = db.db("evol");
-    dbo.collection("current").find({}).toArray(function(err, result) {
+    dbo.collection("best").find({}).toArray(function(err, result) {
       if (err) throw err;
       console.log(result);
       db.close();

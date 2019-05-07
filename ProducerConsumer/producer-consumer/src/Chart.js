@@ -88,7 +88,7 @@ class Chart extends Component{
              for(let i=1;i<=this.state.nMessages;i++){
                  let pSize=this.props.random.population? Math.round(Math.random()*999)+1:this.props.population;
             let message={
-    algorithm:i%2? 'ga':'ga',
+    algorithm:i%2? 'ga':'pso',
     optimizer:this.props.optimizer,
     iterations:this.props.random.iterations? Math.round(Math.random()*1999)+1:this.props.iterations,
     size:pSize,

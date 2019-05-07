@@ -4,8 +4,8 @@ let amqp= require('amqplib/callback_api');
 let ga= require('./GA.1.js');
 var os = require( 'os' );
 var MongoClient = require('mongodb').MongoClient;
-var url = "mongodb://localhost:27017/evol";
-var networkInterfaces = os.networkInterfaces( );
+const url = "mongodb://localhost:27017/evol";
+var networkInterfaces = os.networkInterfaces();
 //Receive messages from socket.io
 socket.on('connection',client=>{
     client.on('message',async (msn)=>{
@@ -24,6 +24,7 @@ socket.on('connection',client=>{
         ga.resends=0;
         ga.resendLimit=params.resendLimit;
         ga.isLivePlot=params.isLivePlot;
+        ga.experimentId= new Date().getTime();
         console.log(params);
         // ga.globalPop=[];
         ga.clearPopulation();
@@ -77,7 +78,7 @@ server.listen(3001,err=>{
                     }
                     // ch.purgeQueue(q);
                     // ch.purgeQueue('GA');
-                    // ga.Save();
+                     ga.Save();
                 }
                 ga.finished=true;
             }else if(ga.resends<ga.resendLimit && ga.resends!==0 && !ga.finished){
