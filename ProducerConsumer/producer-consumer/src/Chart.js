@@ -28,7 +28,7 @@ class Chart extends Component{
             socialFactor:this.props.socialFactor,
             individualFactor:this.props.individualFactor,
             inertiaFactor:this.props.inertiaFactor,
-            id:1,
+            _id:1,
             random:this.props.random,
             nMessages:2,
             json:[],
@@ -50,7 +50,7 @@ class Chart extends Component{
         const socket= socketIOClient('localhost:3001');
         var nm=0;
         socket.on('evolved',async (msn)=> {
-            this.setState({json:this.state.json.map(item=> item.id===msn.id? msn:item),
+            this.setState({json:this.state.json.map(item=> item._id===msn._id? msn:item),
                            //resendLimit:this.state.resendLimit+1,
                            eye:this.state.fitness.filter(f=> f.checked).map((_,i)=>this.refs['plot-'+i].props.layout.scene.camera.eye,this)
                           });
@@ -83,7 +83,7 @@ class Chart extends Component{
     }
     Run(){    
         let json= [];lines=[];
-        algorithm.clear({resendLimit:this.state.resendLimit,isLivePlot:this.state.isLivePlot});
+        algorithm.clear({resendLimit:this.state.resendLimit*this.state.nMessages,isLivePlot:this.state.isLivePlot});
         this.state.fitness.filter(f=> f.checked).map(item=> item.name).forEach((func,fid)=>{
              for(let i=1;i<=this.state.nMessages;i++){
                  let pSize=this.props.random.population? Math.round(Math.random()*999)+1:this.props.population;
@@ -93,7 +93,7 @@ class Chart extends Component{
     iterations:this.props.random.iterations? Math.round(Math.random()*1999)+1:this.props.iterations,
     size:pSize,
     fitness:func,
-    id:(i%2? 'ga':'pso')+'-'+fid+'-'+i,
+    _id:(i%2? 'ga':'pso')+'-'+fid+'-'+i,
     population:algorithm.generateRandomPopulation({
         fitness:func,
         size:this.props.random.individualSize? Math.round(Math.random()*39)+1:this.props.size,
@@ -163,7 +163,7 @@ class Chart extends Component{
                     y: dt.population.map(item=> item[1]),
                     z: fitnessVal,
                     showlegend:true,
-                    name:'Population '.concat(dt.id,'<br>',
+                    name:'Population '.concat(dt._id,'<br>',
                                               'Min:',statistics.min,
                                               '<br>Max:',statistics.max,
                                               '<br>Avg:',statistics.avg),
@@ -187,8 +187,8 @@ class Chart extends Component{
                     // y: lines.filter(f=> f.id===dt.id).map(item=> item.pop)[0],
                     mode: 'lines',
                     showlegend:true,
-                    id:dt.id,
-                    name:'Experiment '.concat(dt.id,'<br>',
+                    _id:dt._id,
+                    name:'Experiment '.concat(dt._id,'<br>',
                                               'Min:',statistics.min,
                                               '<br>Max:',statistics.max,
                                               '<br>Avg:',statistics.avg)

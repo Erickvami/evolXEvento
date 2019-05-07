@@ -3,18 +3,21 @@ const socket= require('socket.io')(server);
 let amqp= require('amqplib/callback_api');
 let ga= require('./GA.1.js');
 var os = require( 'os' );
+var MongoClient = require('mongodb').MongoClient;
+var url = "mongodb://localhost:27017/evol";
 var networkInterfaces = os.networkInterfaces( );
 //Receive messages from socket.io
 socket.on('connection',client=>{
     client.on('message',async (msn)=>{
         ga.finished=false;
-        console.log('sending:=>',msn.id);
-        ga.globalPop.push(msn);
+        console.log('sending:=>',msn._id);
+        // ga.globalPop.push(msn);
+        ga.insertIndividual(msn);
         msn.ip=networkInterfaces.en0[1].address;
         setTimeout(async ()=>{
         ga.send(JSON.stringify(msn),msn.algorithm);
         
-        },2000);
+        },1000);
     });
     client.on('clear',async (params)=>{
         console.log('clear');
@@ -22,13 +25,14 @@ socket.on('connection',client=>{
         ga.resendLimit=params.resendLimit;
         ga.isLivePlot=params.isLivePlot;
         console.log(params);
-        ga.globalPop=[];
+        // ga.globalPop=[];
+        ga.clearPopulation();
     });
     client.on('crossPop',async (msn)=>{
         ga.crossPop(msn);
     });
     client.on('Save',async (msn)=>{
-        ga.SaveMessage(msn)
+        // ga.SaveMessage(msn)
     });
     // client.on('disconnect',()=>{
     //    // socket.open();
@@ -49,20 +53,31 @@ server.listen(3001,err=>{
         ch.assertQueue(q,{durable:false});
         ch.consume('Evolved', function(msg) {            
             var evolvedPop=JSON.parse(msg.content);
-            ga.globalPop= ga.globalPop.filter(f=> f.id!==evolvedPop.id);
-            ga.globalPop.push(evolvedPop);
-            ga.resends++;
-            if(ga.resends>ga.resendLimit){
+            // ga.globalPop= ga.globalPop.filter(f=> f._id!==evolvedPop._id);
+            // ga.globalPop.push(evolvedPop);
+            ga.replaceIndividual(evolvedPop);
+            
+            if(ga.resends>=ga.resendLimit){
                 if(!ga.finished){
                     socket.emit('finished',true);
                     if(!ga.isLivePlot){
-                        ga.globalPop.forEach(item=>{
-                            socket.emit('evolved',item);
-                        });
+                        // ga.globalPop.forEach(item=>{
+                        //     socket.emit('evolved',item);
+                        // });
+                        MongoClient.connect(url, { useNewUrlParser: true },function(err, db) {
+                            if (err) throw err;
+                            var dbo = db.db("evol");
+                            dbo.collection("current").find({}).toArray(function(err, result) {
+                            if (err) throw err;
+                            // console.log(result);
+                            result.forEach(item=> socket.emit('evolved',item));
+                            db.close();
+                            });
+                        }); 
                     }
                     // ch.purgeQueue(q);
                     // ch.purgeQueue('GA');
-                    ga.Save();
+                    // ga.Save();
                 }
                 ga.finished=true;
             }else if(ga.resends<ga.resendLimit && ga.resends!==0 && !ga.finished){
@@ -73,7 +88,7 @@ server.listen(3001,err=>{
                 // console.log(ga.globalPop);
                 socket.emit('evolved',evolvedPop);
             }
-            console.log('<=:receiving :',evolvedPop.id);
+            console.log('<=:receiving :',evolvedPop._id);
             
         }, {noAck: true});
      });
