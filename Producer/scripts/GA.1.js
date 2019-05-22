@@ -6,11 +6,13 @@ var url = "mongodb://localhost:27017/evol";
 module.exports={
 experimentId:undefined,
 nMessages:0,
+evaluations:0,
 best:null,
 // globalPop:[],//population of populations
 resendLimit:0,//limit times of resending to evolve (generations)
 resends:0,//send counter
-finished:true,//is finish flag
+finished:false,//is finish flag
+done:false,
 isLivePlot:true,// determines if there will be send every change to UI or just the last result
 Save: async ()=>{
     MongoClient.connect(url, { useNewUrlParser: true }).then(db=> {
@@ -18,7 +20,7 @@ Save: async ()=>{
         
         dbo.collection("current").find({},{"sort": [['best','asc']]})
         .toArray().then(out=> {
-            dbo.collection("best").find({},{"sort": [['best','asc']]})
+            dbo.collection("best").find({expId:module.exports.experimentId},{"sort": [['best','asc']]})
             .toArray().then(out2=> {
                 let log={
                     population:{
@@ -30,8 +32,8 @@ Save: async ()=>{
                         rastrigin:out2.filter(item=> item.fitness=='rastringin').sort((a,b)=> a.iteration-b.iteration)
                     }
                 };
-                writeJsonFile('Experiments/Experiment_'.concat(new Date().toDateString(),',',new Date().getHours(),'',new Date().getMinutes(),'.json'), log);
-                module.exports.clearPopulation();
+                writeJsonFile('Experiments/Experiment_'.concat(module.exports.experimentId,'.json'), log);
+                // module.exports.clearPopulation();
             });
         });
     });
@@ -42,7 +44,7 @@ SaveMessage: async (msn)=> {//saves the experiment data
     await writeJsonFile('Experiments/Experiment_'.concat(new Date().toDateString(),',',new Date().getHours(),'',new Date().getMinutes(),'.json'), msn);
     await writeJsonFile('Experiments/GlobalPop_'.concat(new Date().toDateString(),',',new Date().getHours(),'',new Date().getMinutes(),'.json'), module.exports.globalPop);
 },
-insertIndividual:individual=>{
+insertIndividual:async individual=>{
     MongoClient.connect(url, { useNewUrlParser: true },function(err, db) {
         if (err) throw err;
         var dbo = db.db("evol");
@@ -71,12 +73,12 @@ MongoClient.connect(url, { useNewUrlParser: true },function(err, db) {
   });
 },
 send:(message,channel)=>{//sends one individual population to evolve
-    module.exports.resends=module.exports.resends+1;
+    
     // console.log(module.exports.resends);
     // console.log(module.exports.resendLimit);
     // console.log(module.exports.resends>=module.exports.resendLimit);
-        if(module.exports.resends<=module.exports.resendLimit){
-            
+        if(module.exports.resends<=module.exports.resendLimit || !module.exports.finished){
+                        
             return new Promise(async ()=>{
                 fetch("http://localhost:8080/function/"+channel+"-fn",{
                                 method:"POST",
@@ -87,14 +89,14 @@ send:(message,channel)=>{//sends one individual population to evolve
     
     return false;
     },
-setBest:async (best)=>{
+setBest:async (best,resends)=>{
 // return individuals.map(item=> [item._id,item.best])
 // .sort((a,b)=> a[1]-b[1])[individuals[0].optimizer==='Minimize'? 0+take:individuals.length-1-take];
 MongoClient.connect(url, { useNewUrlParser: true },function(err, db) {
     if (err) throw err;
     var dbo = db.db("evol");
         //   var myobj = { name: "val"+i, value: i };
-          dbo.collection("best").insertOne({expId:module.exports.experimentId,iteration:module.exports.resends,best:best.best,bestId:best._id,alg:best.algorithm,fitness:best.fitness}, function(err, res) {
+          dbo.collection("best").insertOne({expId:module.exports.experimentId,iteration:resends,best:best.best,bestId:best._id,alg:best.algorithm,fitness:best.fitness}, function(err, res) {
             if (err) throw err;
             // console.log(individual._id," inserted");
             db.close();    
@@ -106,14 +108,30 @@ crossPop:(evolvedPop)=>{//cross the individuals and sends them to evolve
         setTimeout(async ()=>{
             MongoClient.connect(url, { useNewUrlParser: true }).then(db=> {
                 var dbo = db.db("evol");
-                dbo.collection("current").find({fitness:evolvedPop.fitness},{"sort": [['best',evolvedPop.optimizer==='Minimize'?'asc':'desc']],limit:2})
+            dbo.collection("current").find({fitness:evolvedPop.fitness},{"sort": [['best',evolvedPop.optimizer==='Minimize'?'asc':'desc']],limit:2})
                 .toArray().then(out=> {
+                    console.log(module.exports.resends);
+                    console.log(out[0].best);
+                    module.exports.resends=module.exports.resends+1;
+                    if(out[0].best<=7.0e-8){
+                        module.exports.finished=true;
+                    }
                     // module.exports.best= out[Math.floor(Math.random() * (+(2) - +0)) + +0];
+                    // console.log(out.length);
                     console.log('best:'+out[0]._id+' of '+out[0].algorithm);
-                    module.exports.setBest(out[0]);
+                    
+                    module.exports.setBest(out[0],module.exports.resends);
                     // console.log(out[Math.floor(Math.random() * (+(2) - +0)) + +0]);
 
                     let selectedPop=[evolvedPop,out[0]];//Math.floor(Math.random() * (+(2) - +0)) + +0]];//module.exports.globalPop.filter(fil=> fil._id===module.exports.getBest(module.exports.globalPop.filter(f=> f.fitness===evolvedPop.fitness),Math.random()>5?1:0)[0])[0]];
+                    // module.exports.resends=module.exports.resends+1;
+                    // if(module.exports.resends<=module.exports.resendLimit){
+                    //     console.log('crossing '+selectedPop[0]._id+' and '+selectedPop[1]._id);
+                    // fetch("http://localhost:8080/function/cross-fn",{
+                    //             method:"POST",
+                    //             body:JSON.stringify(selectedPop)
+                    //         });
+                    // }
                     let crossedPop=({//crossover functions
                         uniform: (ParentOne,ParentTwo)=> {//creates a random mask to cross the 2 individuals
                             var parents=[ParentOne,ParentTwo];
@@ -133,7 +151,7 @@ crossPop:(evolvedPop)=>{//cross the individuals and sends them to evolve
                         console.log('resending=>:'+selectedPop[i]._id);
                         module.exports.send(JSON.stringify(selectedPop[i]),selectedPop[i].algorithm);
                     },module.exports);  
-                    // console.log(evolvedPop);     
+                        
                 }).then(()=> db.close());
             });
               

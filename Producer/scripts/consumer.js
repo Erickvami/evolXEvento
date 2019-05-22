@@ -15,12 +15,19 @@ app.post('/evolved',jsonParser,(req,res)=>{
     counter++;
     console.log(req.body._id);
     console.log(counter);
-    amqp.connect('amqp://localhost',function(err,conn){
+    setTimeout(() => {
+        amqp.connect('amqp://localhost',function(err,conn){
+
                         conn.createChannel(function(err,ch){
-                           var q= 'Evolved';//channel's name 
+                            console.log(err);
+                        //    var q= 'Evolved';//channel's name 
+                            let q='Evolved'+(Math.random()>0.5?1:0);
                             ch.assertQueue(q,{durable:false});
                             ch.sendToQueue(q,new Buffer.from(JSON.stringify(req.body)));
                         });
+
                      });
+    }, 1000);
+
 res.send(JSON.stringify({status:'ok'}));
 });

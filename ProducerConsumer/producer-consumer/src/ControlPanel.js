@@ -108,7 +108,7 @@ class ControlPanel extends Component{
             <ListGroup>
                 <ListGroup.Item>{this.SliderInput({label:'Generations',id:'iterations',step:10,min:1,max:2000,checkbox:true})}</ListGroup.Item>
                 <ListGroup.Item>{this.SliderInput({label:'Population',id:'population',step:10,min:10,max:1500,checkbox:true})}</ListGroup.Item>
-                <ListGroup.Item>{this.SliderInput({label:'Individual size',id:'individualSize',step:2,min:2,max:40,checkbox:true})}</ListGroup.Item>
+                <ListGroup.Item>{this.SliderInput({label:'Individual size',id:'individualSize',step:1,min:2,max:40,checkbox:true})}</ListGroup.Item>
                 <ListGroup.Item>{this.DropdownInput({id:'optimizer',label:'Optimizer',checkbox:false})}</ListGroup.Item>
                 <ListGroup.Item style={{background:'#d1d1d1'}}><label>GA Parameters</label></ListGroup.Item>
                 <ListGroup.Item>{this.DropdownInput({id:'crossover',label:'Crossover selection',checkbox:true})} 

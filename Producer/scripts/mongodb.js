@@ -38,15 +38,15 @@ function insert(myobj){
 
 
 //Select all
-MongoClient.connect(url, { useNewUrlParser: true },function(err, db) {
-    if (err) throw err;
-    var dbo = db.db("evol");
-    dbo.collection("best").find({}).toArray(function(err, result) {
-      if (err) throw err;
-      console.log(result);
-      db.close();
-    });
-  }); 
+// MongoClient.connect(url, { useNewUrlParser: true },function(err, db) {
+//     if (err) throw err;
+//     var dbo = db.db("evol");
+//     dbo.collection("current").find({}).toArray(function(err, result) {
+//       if (err) throw err;
+//       console.log(result);
+//       db.close();
+//     });
+//   }); 
 
 
 //Select max
@@ -93,3 +93,12 @@ MongoClient.connect(url, { useNewUrlParser: true },function(err, db) {
 //     db.close();
 //   });
 
+
+MongoClient.connect(url, { useNewUrlParser: true }).then(db=> {
+  var dbo = db.db("evol");
+dbo.collection("current").find({fitness:'sphere'},{"sort": [['best','asc']],limit:2})
+                .toArray().then(out=> {
+                console.log(out);
+                db.close();
+                });
+              });

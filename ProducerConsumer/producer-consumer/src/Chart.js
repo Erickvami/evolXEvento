@@ -135,11 +135,12 @@ class Chart extends Component{
             results:this.refs['plot-'+i].props.data.filter(f=> f.type==='scatter3d' || f.mode==='lines').map(m=> m.name.replace(/<br>/g,','))
             }
         },this);
-//        console.log(json);
+
         algorithm.save(json);
     }
     async Clear(){
         this.setState({json:[],stop:true});
+        algorithm.clear({resendLimit:this.state.resendLimit*this.state.nMessages,isLivePlot:this.state.isLivePlot});
     }
     async Stop(){    
         this.setState({stop:true});
