@@ -73,10 +73,6 @@ MongoClient.connect(url, { useNewUrlParser: true },function(err, db) {
   });
 },
 send:(message,channel)=>{//sends one individual population to evolve
-    
-    // console.log(module.exports.resends);
-    // console.log(module.exports.resendLimit);
-    // console.log(module.exports.resends>=module.exports.resendLimit);
         if(module.exports.resends<=module.exports.resendLimit || !module.exports.finished){
                         
             return new Promise(async ()=>{
@@ -86,19 +82,14 @@ send:(message,channel)=>{//sends one individual population to evolve
                             });
             });
         }
-    
     return false;
     },
 setBest:async (best,resends)=>{
-// return individuals.map(item=> [item._id,item.best])
-// .sort((a,b)=> a[1]-b[1])[individuals[0].optimizer==='Minimize'? 0+take:individuals.length-1-take];
 MongoClient.connect(url, { useNewUrlParser: true },function(err, db) {
     if (err) throw err;
     var dbo = db.db("evol");
-        //   var myobj = { name: "val"+i, value: i };
           dbo.collection("best").insertOne({expId:module.exports.experimentId,iteration:resends,best:best.best,bestId:best._id,alg:best.algorithm,fitness:best.fitness}, function(err, res) {
             if (err) throw err;
-            // console.log(individual._id," inserted");
             db.close();    
           });
   }); 
@@ -110,6 +101,7 @@ crossPop:(evolvedPop)=>{//cross the individuals and sends them to evolve
                 var dbo = db.db("evol");
             dbo.collection("current").find({fitness:evolvedPop.fitness},{"sort": [['best',evolvedPop.optimizer==='Minimize'?'asc':'desc']],limit:2})
                 .toArray().then(out=> {
+                    // let randomPosition= Math.floor(Math.random() * (+(2) - +0)) + +0;
                     console.log(module.exports.resends);
                     console.log(out[0].best);
                     module.exports.resends=module.exports.resends+1;
@@ -118,7 +110,7 @@ crossPop:(evolvedPop)=>{//cross the individuals and sends them to evolve
                     }
                     // module.exports.best= out[Math.floor(Math.random() * (+(2) - +0)) + +0];
                     // console.log(out.length);
-                    console.log('best:'+out[0]._id+' of '+out[0].algorithm);
+                    // console.log('best:'+out[0]._id+' of '+out[0].algorithm);
                     
                     module.exports.setBest(out[0],module.exports.resends);
                     // console.log(out[Math.floor(Math.random() * (+(2) - +0)) + +0]);
@@ -132,11 +124,17 @@ crossPop:(evolvedPop)=>{//cross the individuals and sends them to evolve
                     //             body:JSON.stringify(selectedPop)
                     //         });
                     // }
+                    // console.log(selectedPop);
                     let crossedPop=({//crossover functions
                         uniform: (ParentOne,ParentTwo)=> {//creates a random mask to cross the 2 individuals
                             var parents=[ParentOne,ParentTwo];
                             var mask= ParentOne.map(item=> Math.round(Math.random()));
                             return [mask.map((item,i)=> parents[item][i]),mask.map((item,i)=> parents[item==1?0:1][i])];
+                        },
+                        splitingPointUniform: (ParentOne,ParentTwo)=> {//creates a random mask to cross the 2 individuals
+                            var parents=[ParentOne,ParentTwo];
+                            var mask= ParentOne.map(item=> Math.round(Math.random()));
+                            return [mask.map((item,i)=> parents[item][i]),mask.map((item,i)=> parents[item==1?0:1][i].map((subitem,subi)=> (subitem +parents[item][i][subi])/2))];
                         },
                         onePoint:(ParentOne,ParentTwo)=>{//splits the parents in one point and cross them
                             return [ParentOne.map((item,i)=> i<=Math.round(ParentOne.length/2)-1?item:ParentTwo[i]),ParentTwo.map((item,i)=> i<=Math.round(ParentTwo.length/2)-1?item:ParentOne[i])];
@@ -145,13 +143,17 @@ crossPop:(evolvedPop)=>{//cross the individuals and sends them to evolve
                           let randomIndex= Math.round(Math.random()*(ParentOne.concat(ParentTwo).length-1));
                           return [ParentOne.concat(ParentTwo,ParentOne).slice(randomIndex,randomIndex+ParentTwo.length),ParentOne.concat(ParentTwo,ParentOne,ParentTwo).slice(randomIndex+ParentTwo.length,randomIndex+(ParentTwo.length*2))]
                       }
-                      }).uniform(selectedPop[0].population,selectedPop[1].population);
-                    crossedPop.forEach((pop,i)=>{
+                      }).splitingPointUniform(selectedPop[0].population,selectedPop[1].population);
+                      
+                    let evaluations=crossedPop.map((pop,i)=>{
                         selectedPop[i].population=pop;
                         console.log('resending=>:'+selectedPop[i]._id);
                         module.exports.send(JSON.stringify(selectedPop[i]),selectedPop[i].algorithm);
+                        // return pop.map(elem=> ({
+                        //     sphere:(entity)=>{let total=0; entity.forEach(item=>{total+=Math.pow(item,2)});return total;},//[Σn^2]}
+                        //     rastringin:(entity)=>{let total=0; entity.forEach(item=>{total+=(Math.pow(item,2)-10*Math.cos(2*Math.PI*item))});return (10*entity.length)+total;}
+                        //     })[selectedPop[i].fitness](elem)).sort((a,b)=> selectedPop[i].optimizer==='Minimize'? a-b:b-a)[0];
                     },module.exports);  
-                        
                 }).then(()=> db.close());
             });
               

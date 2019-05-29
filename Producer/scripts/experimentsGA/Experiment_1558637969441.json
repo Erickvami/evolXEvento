@@ -1,0 +1,20 @@
+{
+	"population": {
+		"sphere": [],
+		"rastrigin": []
+	},
+	"bestsByIteration": {
+		"sphere": [
+			{
+				"_id": "5ce6ed9174967a1a924875f6",
+				"expId": 1558637969441,
+				"iteration": 1,
+				"best": 5.194076482721644e-8,
+				"bestId": "ga-0-4",
+				"alg": "ga",
+				"fitness": "sphere"
+			}
+		],
+		"rastrigin": []
+	}
+}
