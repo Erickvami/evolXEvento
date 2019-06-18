@@ -32,7 +32,7 @@ class Chart extends Component{
             random:this.props.random,
             nMessages:2,
             json:[],
-            fitness:[{name:'sphere',checked:true},{name:'rastringin',checked:false}],
+            fitness:[{name:'sphere',checked:false},{name:'rastringin',checked:false},{name:'rosenbrock',checked:true}],
             plotValues:[],
             stop:true,
             resendLimit:3,
