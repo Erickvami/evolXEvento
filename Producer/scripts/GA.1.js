@@ -25,11 +25,13 @@ Save: async ()=>{
                 let log={
                     population:{
                         sphere: out.filter(item=> item.fitness==='sphere').sort((a,b)=> a.best-b.best),
-                        rastrigin:out.filter(item=> item.fitness==='rastringin').sort((a,b)=> a.best-b.best)
+                        rastrigin:out.filter(item=> item.fitness==='rastringin').sort((a,b)=> a.best-b.best),
+                        rosenbrock:out.filter(item=> item.fitness==='rosenbrock').sort((a,b)=> a.best-b.best)
                     },
                     bestsByIteration:{
                         sphere:out2.filter(item=> item.fitness=='sphere').sort((a,b)=> a.iteration-b.iteration),
-                        rastrigin:out2.filter(item=> item.fitness=='rastringin').sort((a,b)=> a.iteration-b.iteration)
+                        rastrigin:out2.filter(item=> item.fitness=='rastringin').sort((a,b)=> a.iteration-b.iteration),
+                        rosenbrock:out2.filter(item=> item.fitness=='rosenbrock').sort((a,b)=> a.iteration-b.iteration)
                     }
                 };
                 writeJsonFile('Experiments/Experiment_'.concat(module.exports.experimentId,'.json'), log);
