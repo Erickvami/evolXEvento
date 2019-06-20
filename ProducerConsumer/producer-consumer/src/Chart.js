@@ -223,8 +223,8 @@ xyz.push({
 type: 'mesh3d',
 x: fn[item.name].x,
 y: fn[item.name].y,
-z: fn[item.name].y.map((xy,i)=> fn.fitness[item.name]([xy,fn[item.name].x[i]])),
-intensity: fn[item.name].y.map((xy,i)=> fn.fitness[item.name]([xy,fn[item.name].x[i]])),
+z: fn[item.name].x.map((xy,i)=> fn.fitness[item.name]([xy,fn[item.name].y[i]])),
+intensity: fn[item.name].x.map((xy,i)=> fn.fitness[item.name]([xy,fn[item.name].y[i]])),
 colorscale: 'Jet',
 opacity:1
 });

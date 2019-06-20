@@ -17,7 +17,7 @@ individual:{
 types:['int','float','decimal'],
 selected:'int',
 },
-individualSize:10,
+individualSize:2,
 mutation:{
 types:['Tournament2','Tournament3','Random','RandomLinearRank','Sequential','Fittest'],
 selected:'Tournament3'
