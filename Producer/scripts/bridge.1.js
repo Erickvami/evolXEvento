@@ -112,7 +112,7 @@ app.post('/evolved', async(req, res) => {
     if(ga.resends>=ga.resendLimit || ga.finished){
         if(!ga.done){
             ga.done=true;
-            socket.emit({message:'finished',experimentId:ga.experimentId},true);
+            socket.emit('finished',{message:'finished',experimentId:ga.experimentId});
             if(!ga.isLivePlot){
                 // ga.globalPop.forEach(item=>{
                 //     socket.emit('evolved',item);
