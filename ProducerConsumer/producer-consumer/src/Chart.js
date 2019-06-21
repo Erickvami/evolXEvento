@@ -82,7 +82,7 @@ labels={{5:this.state[obj.id]}}
 </label>;
 }
 Run(){
-let json= [];lines=[];
+let json= [];
 algorithm.clear({resendLimit:this.state.resendLimit*this.state.nMessages*this.state.fitness.filter(item=> item.checked).length,isLivePlot:this.state.isLivePlot});
 this.state.fitness.filter(f=> f.checked).map(item=> item.name).forEach((func,fid)=>{
 for(let i=1;i<=this.state.nMessages;i++){
