@@ -34,8 +34,8 @@ crossoverType:{
 types:['uniform','splittingPointUniform','onePoint','ring'],
 selected:'splittingPointUniform'
 },
-iterations:70,
-population:200,
+iterations:50,
+population:100,
 mutationPercentage:0.2,
 crossoverPercentage:0.6,
 socialFactor:2.05,
@@ -106,11 +106,12 @@ return <Row>
 <Col xs={3}>
 <Card>
 <ListGroup>
+<ListGroup.Item style={{background:'#d1d1d1'}}><label>Sub-population params</label></ListGroup.Item>
 <ListGroup.Item>{this.SliderInput({label:'Generations',id:'iterations',step:10,min:1,max:2000,checkbox:true})}</ListGroup.Item>
 <ListGroup.Item>{this.SliderInput({label:'Population',id:'population',step:10,min:10,max:1500,checkbox:true})}</ListGroup.Item>
 <ListGroup.Item>{this.SliderInput({label:'Individual size',id:'individualSize',step:1,min:2,max:40,checkbox:true})}</ListGroup.Item>
 <ListGroup.Item>{this.DropdownInput({id:'optimizer',label:'Optimizer',checkbox:false})}</ListGroup.Item>
-<ListGroup.Item style={{background:'#d1d1d1'}}><label>GA Parameters</label></ListGroup.Item>
+<ListGroup.Item style={{background:'#d1d1d1'}}><label>GA Params</label></ListGroup.Item>
 <ListGroup.Item>{this.DropdownInput({id:'crossover',label:'Crossover selection',checkbox:true})}
 </ListGroup.Item>
 <ListGroup.Item>{this.DropdownInput({id:'crossoverType',label:'Crossover Type',checkbox:true})}
@@ -118,7 +119,7 @@ return <Row>
 <ListGroup.Item>{this.SliderInput({label:'Crossover %',id:'crossoverPercentage',step:0.1,min:0.0,max:1.0,checkbox:true,percentage:true})}</ListGroup.Item>
 <ListGroup.Item>{this.DropdownInput({id:'mutation',label:'Mutation selection',checkbox:true})}</ListGroup.Item>
 <ListGroup.Item>{this.SliderInput({label:'Mutation %',id:'mutationPercentage',step:0.1,min:0.0,max:1.0,checkbox:true,percentage:true})}</ListGroup.Item>
-<ListGroup.Item style={{background:'#d1d1d1'}}><label>PSO Parameters</label></ListGroup.Item>
+<ListGroup.Item style={{background:'#d1d1d1'}}><label>PSO Params</label></ListGroup.Item>
 <ListGroup.Item>{this.SliderInput({label:'Social factor',id:'socialFactor',step:0.01,min:0.0,max:4.0,checkbox:true,percentage:true})}</ListGroup.Item>
 <ListGroup.Item>{this.SliderInput({label:'Individual factor',id:'individualFactor',step:0.01,min:0.0,max:4.0,checkbox:true,percentage:true})}</ListGroup.Item>
 <ListGroup.Item>{this.SliderInput({label:'Inertia factor',id:'inertiaFactor',step:0.01,min:0.0,max:2.0,checkbox:true,percentage:true})}</ListGroup.Item>

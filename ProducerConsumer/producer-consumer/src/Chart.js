@@ -10,7 +10,6 @@ import socketIOClient from "socket.io-client";
 import Plot from 'react-plotly.js';
 import {fn} from './constants.js';
 
-let lines=[];
 
 class Chart extends Component{
 constructor(props){
@@ -206,8 +205,8 @@ return <Card>
 <Button onClick={this.Stop} variant='danger'>Stop</Button>
 <Button onClick={this.Run} variant='success'>Run</Button>
 </ButtonGroup>
-{this.SliderInput({label:'Messages',id:'nMessages',step:1,min:1,max:10,})}
-{this.SliderInput({label:'Resends',id:'resendLimit',step:1,min:1,max:50})}
+{this.SliderInput({label:'Multi-population size',id:'nMessages',step:1,min:1,max:10,})}
+{this.SliderInput({label:'Multi-population Iterations',id:'resendLimit',step:1,min:1,max:50})}
 <label><input type='checkbox' checked={this.state.isLivePlot} onClick={val=>
 this.setState({isLivePlot:val.target.checked})} /> Live Plot</label>
 <label><input type='checkbox' checked={this.state.isGA} onClick={val=>

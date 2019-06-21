@@ -1,5 +1,6 @@
 import socketIOClient from "socket.io-client";
 import {fn} from './constants.js';
+let MANAGER_IP='192.168.1.212:3001';
 export const algorithm={
 generateRandomPopulation: (definition)=>{
 var random={
@@ -11,25 +12,25 @@ return (new Array(definition.length).fill()).map(()=>(new Array(definition.size)
 },
 send:async (message)=>{
 return new Promise(async ()=>{
-const socket = socketIOClient('192.168.1.212:3001');
+const socket = socketIOClient(MANAGER_IP);
 socket.emit('message', message);
 });
 },
 resend:async (message)=>{
 return new Promise(async ()=>{
-const socket = socketIOClient('192.168.1.212:3001');
+const socket = socketIOClient(MANAGER_IP);
 socket.emit('crossPop', message);
 });
 },
 save:(json)=>{
 return new Promise(async ()=> {
-const socket = socketIOClient('192.168.1.212:3001');
+const socket = socketIOClient(MANAGER_IP);
 socket.emit('Save', json);
 });
 },
 clear:(params)=>{
 return new Promise(async ()=> {
-const socket = socketIOClient('192.168.1.212:3001');
+const socket = socketIOClient(MANAGER_IP);
 socket.emit('clear', params);
 });
 }
