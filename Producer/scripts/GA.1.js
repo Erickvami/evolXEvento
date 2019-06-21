@@ -25,11 +25,13 @@ Save: async ()=>{
                 let log={
                     population:{
                         sphere: out.filter(item=> item.fitness==='sphere').sort((a,b)=> a.best-b.best),
-                        rastrigin:out.filter(item=> item.fitness==='rastringin').sort((a,b)=> a.best-b.best)
+                        rastrigin:out.filter(item=> item.fitness==='rastringin').sort((a,b)=> a.best-b.best),
+                        rosenbrock:out.filter(item=> item.fitness==='rosenbrock').sort((a,b)=> a.best-b.best)
                     },
                     bestsByIteration:{
                         sphere:out2.filter(item=> item.fitness=='sphere').sort((a,b)=> a.iteration-b.iteration),
-                        rastrigin:out2.filter(item=> item.fitness=='rastringin').sort((a,b)=> a.iteration-b.iteration)
+                        rastrigin:out2.filter(item=> item.fitness=='rastringin').sort((a,b)=> a.iteration-b.iteration),
+                        rosenbrock:out2.filter(item=> item.fitness=='rosenbrock').sort((a,b)=> a.iteration-b.iteration)
                     }
                 };
                 writeJsonFile('Experiments/Experiment_'.concat(module.exports.experimentId,'.json'), log);
@@ -99,32 +101,18 @@ crossPop:(evolvedPop)=>{//cross the individuals and sends them to evolve
         setTimeout(async ()=>{
             MongoClient.connect(url, { useNewUrlParser: true }).then(db=> {
                 var dbo = db.db("evol");
-            dbo.collection("current").find({fitness:evolvedPop.fitness},{"sort": [['best',evolvedPop.optimizer==='Minimize'?'asc':'desc']],limit:2})
+            dbo.collection("current").find({fitness:evolvedPop.fitness},{"sort": [['best',evolvedPop.optimizer==='Minimize'?'asc':'desc']]})//,limit:2})
                 .toArray().then(out=> {
                     // let randomPosition= Math.floor(Math.random() * (+(2) - +0)) + +0;
+                    let now= {best: out[0],worst:out[out.length-1]};
                     console.log(module.exports.resends);
-                    console.log(out[0].best);
+                    console.log(now.best.best);
                     module.exports.resends=module.exports.resends+1;
-                    if(out[0].best<=7.0e-8){
+                    if(now.best.best<=7.0e-8){
                         module.exports.finished=true;
                     }
-                    // module.exports.best= out[Math.floor(Math.random() * (+(2) - +0)) + +0];
-                    // console.log(out.length);
-                    // console.log('best:'+out[0]._id+' of '+out[0].algorithm);
-                    
-                    module.exports.setBest(out[0],module.exports.resends);
-                    // console.log(out[Math.floor(Math.random() * (+(2) - +0)) + +0]);
-
-                    let selectedPop=[evolvedPop,out[0]];//Math.floor(Math.random() * (+(2) - +0)) + +0]];//module.exports.globalPop.filter(fil=> fil._id===module.exports.getBest(module.exports.globalPop.filter(f=> f.fitness===evolvedPop.fitness),Math.random()>5?1:0)[0])[0]];
-                    // module.exports.resends=module.exports.resends+1;
-                    // if(module.exports.resends<=module.exports.resendLimit){
-                    //     console.log('crossing '+selectedPop[0]._id+' and '+selectedPop[1]._id);
-                    // fetch("http://localhost:8080/function/cross-fn",{
-                    //             method:"POST",
-                    //             body:JSON.stringify(selectedPop)
-                    //         });
-                    // }
-                    // console.log(selectedPop);
+                    module.exports.setBest(now.best,module.exports.resends);
+                    let selectedPop=[evolvedPop,now.best];//Math.floor(Math.random() * (+(2) - +0)) + +0]];//module.exports.globalPop.filter(fil=> fil._id===module.exports.getBest(module.exports.globalPop.filter(f=> f.fitness===evolvedPop.fitness),Math.random()>5?1:0)[0])[0]];
                     let crossedPop=({//crossover functions
                         uniform: (ParentOne,ParentTwo)=> {//creates a random mask to cross the 2 individuals
                             var parents=[ParentOne,ParentTwo];
@@ -149,10 +137,6 @@ crossPop:(evolvedPop)=>{//cross the individuals and sends them to evolve
                         selectedPop[i].population=pop;
                         console.log('resending=>:'+selectedPop[i]._id);
                         module.exports.send(JSON.stringify(selectedPop[i]),selectedPop[i].algorithm);
-                        // return pop.map(elem=> ({
-                        //     sphere:(entity)=>{let total=0; entity.forEach(item=>{total+=Math.pow(item,2)});return total;},//[Σn^2]}
-                        //     rastringin:(entity)=>{let total=0; entity.forEach(item=>{total+=(Math.pow(item,2)-10*Math.cos(2*Math.PI*item))});return (10*entity.length)+total;}
-                        //     })[selectedPop[i].fitness](elem)).sort((a,b)=> selectedPop[i].optimizer==='Minimize'? a-b:b-a)[0];
                     },module.exports);  
                 }).then(()=> db.close());
             });
