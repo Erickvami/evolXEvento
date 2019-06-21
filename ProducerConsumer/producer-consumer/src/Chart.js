@@ -66,8 +66,12 @@ this.setState({isRunning:false});
 socket.on('finished',async(msn)=>{
 // alert('Evolution finished!');
 // setTimeout(()=>this.Save(),4000);
-let isSaving=window.confirm("Experiment finished, save results?");
-console.log(isSaving);
+if(window.confirm("Experiment ".concat(msn.experimentId," finished, save results?"))){
+algorithm.requestJSON(msn.experimentId);
+}
+});
+socket.on('getLog',async(msn)=>{
+    algorithm.downloadJSON(msn,'Exp_'+new Date().getTime());
 });
 }
 SliderInput(obj){
