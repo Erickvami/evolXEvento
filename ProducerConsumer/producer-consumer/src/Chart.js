@@ -56,7 +56,7 @@ this.setState({json:this.state.json.map(item=> item._id===msn._id? msn:item),
 eye:this.state.fitness.filter(f=> f.checked).map((_,i)=>this.refs['plot-'+i].props.layout.scene.camera.eye,this)
 });
 nm++;
-console.log(nm+'-',this.state.resendLimit*this.state.nMessages);
+// console.log(nm+'-',this.state.resendLimit*this.state.nMessages);
 if(this.state.stop || nm+this.state.nMessages>=(this.state.resendLimit*this.state.nMessages)){
 nm=0;
 this.setState({isRunning:false});
@@ -64,8 +64,10 @@ this.setState({isRunning:false});
 }
 },this);
 socket.on('finished',async(msn)=>{
-alert('Evolution finished!');
-setTimeout(()=>this.Save(),4000);
+// alert('Evolution finished!');
+// setTimeout(()=>this.Save(),4000);
+let isSaving=window.confirm("Experiment finished, save results?");
+console.log(isSaving);
 });
 }
 SliderInput(obj){
@@ -156,7 +158,7 @@ GetXYZ(fitnessFunction){
 let data=this.state.json.filter(f=> f.fitness===fitnessFunction);
 return data.map(dt=>{
 let fitnessVal=dt.population.map((item,i)=> fn.fitness[fitnessFunction](item));
-console.log(fitnessVal);
+// console.log(fitnessVal);
 let statistics={min:Math.min.apply(null,fitnessVal),max:Math.max.apply(null,fitnessVal),avg:dt.population.length>0?fitnessVal.reduce((previous, current) => current += previous)/dt.population.length:0};
 if(dt.population[0].length===2){
 return {
@@ -200,9 +202,9 @@ render(){
 return <Card>
 <ButtonGroup>
 {this.Checks({id:'fitness',label:'Fitness'})}
-<Button onClick={this.Save} variant='primary'>Save</Button>
+{/* <Button onClick={this.Save} variant='primary'>Save</Button> */}
 <Button onClick={this.Clear} variant='warning'>Clear</Button>
-<Button onClick={this.Stop} variant='danger'>Stop</Button>
+{/* <Button onClick={this.Stop} variant='danger'>Stop</Button> */}
 <Button onClick={this.Run} variant='success'>Run</Button>
 </ButtonGroup>
 {this.SliderInput({label:'Multi-population size',id:'nMessages',step:1,min:1,max:10,})}
