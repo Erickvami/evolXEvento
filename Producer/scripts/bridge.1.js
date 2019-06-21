@@ -58,11 +58,8 @@ socket.on('connection',client=>{
         // ga.globalPop=[];
         ga.clearPopulation();
     });
-    client.on('crossPop',async (msn)=>{
-        ga.crossPop(msn);
-    });
-    client.on('Save',async (msn)=>{
-        // ga.SaveMessage(msn)
+    client.on('downloadLog',async (msn)=>{
+        socket.emit('getLog',require('./Experiments/Experiment_'+msn+'.json'))
     });
     // client.on('disconnect',()=>{
     //    // socket.open();
