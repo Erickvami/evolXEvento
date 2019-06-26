@@ -112,7 +112,9 @@ crossPop:(evolvedPop)=>{//cross the individuals and sends them to evolve
                     console.log(module.exports.resends);
                     console.log(now.best.best);
                     module.exports.resends=module.exports.resends+1;
-                    if(now.best.best<=7.0e-8){
+                    if(now.best.best<=7.0e-8 && evolvedPop.optimizer==='Minimize'){
+                        module.exports.finished=true;
+                    }else if(now.best.best>1000000 && evolvedPop.optimizer==='Maximize'){
                         module.exports.finished=true;
                     }
                     module.exports.setBest(now.best,module.exports.resends);
@@ -137,7 +139,7 @@ crossPop:(evolvedPop)=>{//cross the individuals and sends them to evolve
                       }
                       }).splitingPointUniform(selectedPop[0].population,selectedPop[1].population);
                       
-                    let evaluations=crossedPop.map((pop,i)=>{
+                      crossedPop.forEach((pop,i)=>{
                         selectedPop[i].population=pop;
                         console.log('resending=>:'+selectedPop[i]._id);
                         module.exports.send(JSON.stringify(selectedPop[i]),selectedPop[i].algorithm);
