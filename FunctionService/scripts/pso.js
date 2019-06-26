@@ -15,7 +15,13 @@ module.exports=(opt)=>{
             desiredPrecision: 1E-10,
             fitnessFunction: ({
                 sphere:(entity)=>{let total=0; entity.forEach(item=>{total+=Math.pow(item,2)});return total;},//[Σn^2]}
-                rastringin:(entity)=>{let total=0; entity.forEach(item=>{total+=(Math.pow(item,2)-10*Math.cos(2*Math.PI*item))});return (10*entity.length)+total;}
+                rastringin:(entity)=>{let total=0; entity.forEach(item=>{total+=(Math.pow(item,2)-10*Math.cos(2*Math.PI*item))});return (10*entity.length)+total;},
+                rosenbrock:(entity)=>{let total=0; 
+                    entity.forEach(item=>{
+                      total+=(100*Math.pow(item+1-Math.pow(item,2),2)+Math.pow(item-1,2));
+                    });
+                    return total;
+                  }
                 })[opt.fitness],
             socialFactor:(iteration)=> opt.socialFactor,
             individualFactor:(iteration)=> opt.individualFactor,
