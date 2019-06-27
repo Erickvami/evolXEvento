@@ -1,8 +1,10 @@
 // var amqp= require('amqplib/callback_api');
+const parallel = require('run-parallel');
 const writeJsonFile = require('write-json-file');
 const fetch = require('node-fetch');
 var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:27017/evol";
+var tail=[];
 module.exports={
 experimentId:undefined,
 nMessages:0,
@@ -78,8 +80,8 @@ MongoClient.connect(url, { useNewUrlParser: true },function(err, db) {
     db.close();
   });
 },
-send:(message,channel)=>{//sends one individual population to evolve
-        if(module.exports.resends<=module.exports.resendLimit || !module.exports.finished){
+send:(message,channel,fitness)=>{//sends one individual population to evolve
+        if(module.exports.resends[fitness]<=module.exports.resendLimit || !module.exports.finished.filter(f=> f.fitness===fitness)[0].isFinish){
                         
             return new Promise(async ()=>{
                 fetch("http://localhost:8080/function/"+channel+"-fn",{
@@ -109,15 +111,15 @@ crossPop:(evolvedPop)=>{//cross the individuals and sends them to evolve
                 .toArray().then(out=> {
                     // let randomPosition= Math.floor(Math.random() * (+(2) - +0)) + +0;
                     let now= {best: out[0],worst:out[out.length-1]};
-                    console.log(module.exports.resends);
+                    console.log(module.exports.resends[evolvedPop.fitness]);
                     console.log(now.best.best);
-                    module.exports.resends=module.exports.resends+1;
+                    module.exports.resends[evolvedPop.fitness]=module.exports.resends[evolvedPop.fitness]+1;
                     if(now.best.best<=7.0e-8 && evolvedPop.optimizer==='Minimize'){
-                        module.exports.finished=true;
+                        module.exports.finished.filter(f=> f.fitness===evolvedPop.fitness)[0].isFinish=true;
                     }else if(now.best.best>1000000 && evolvedPop.optimizer==='Maximize'){
-                        module.exports.finished=true;
+                        module.exports.finished.filter(f=> f.fitness===evolvedPop.fitness)[0].isFinish=true;
                     }
-                    module.exports.setBest(now.best,module.exports.resends);
+                    module.exports.setBest(now.best,module.exports.resends[evolvedPop.fitness]);
                     let selectedPop=[evolvedPop,now.best];//Math.floor(Math.random() * (+(2) - +0)) + +0]];//module.exports.globalPop.filter(fil=> fil._id===module.exports.getBest(module.exports.globalPop.filter(f=> f.fitness===evolvedPop.fitness),Math.random()>5?1:0)[0])[0]];
                     let crossedPop=({//crossover functions
                         uniform: (ParentOne,ParentTwo)=> {//creates a random mask to cross the 2 individuals
@@ -142,7 +144,7 @@ crossPop:(evolvedPop)=>{//cross the individuals and sends them to evolve
                       crossedPop.forEach((pop,i)=>{
                         selectedPop[i].population=pop;
                         console.log('resending=>:'+selectedPop[i]._id);
-                        module.exports.send(JSON.stringify(selectedPop[i]),selectedPop[i].algorithm);
+                        module.exports.send(JSON.stringify(selectedPop[i]),selectedPop[i].algorithm,selectedPop[i].fitness);
                     },module.exports);  
                 }).then(()=> db.close());
             });

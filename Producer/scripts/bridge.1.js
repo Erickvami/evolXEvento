@@ -39,7 +39,7 @@ socket.on('connection',client=>{
         ga.insertIndividual(msn).then(()=>{
             msn.ip=networkInterfaces.en0[1].address;
         setTimeout(async ()=>{
-        ga.send(JSON.stringify(msn),msn.algorithm);
+        ga.send(JSON.stringify(msn),msn.algorithm,msn.fitness);
         
         },1000);
         });
@@ -51,7 +51,7 @@ socket.on('connection',client=>{
         params.functions.forEach(fn=> {
             resends[fn.name]=0
             });
-        var areFinish= functions.map(fn=> {return {fitness:fn,isFinish:false}});
+        let areFinish= functions.map(fn=> {return {fitness:fn,isFinish:false}});
         ga.resends=resends;
         ga.resendLimit=params.resendLimit;
         ga.isLivePlot=params.isLivePlot;
@@ -110,7 +110,7 @@ app.post('/evolved', async(req, res) => {
     // ga.globalPop.push(evolvedPop);
     ga.replaceIndividual(evolvedPop);
     console.log('is finished:'+ga.finished)
-    if(ga.resends>=ga.resendLimit || ga.finished){
+    if(ga.resends[evolvedPop.fitness]>=ga.resendLimit || ga.finished.every(fn=> fn.isFinish)){
         if(!ga.done){
             ga.done=true;
             socket.emit('finished',{message:'finished',experimentId:ga.experimentId});
@@ -135,7 +135,7 @@ app.post('/evolved', async(req, res) => {
         }
         // ga.finished=true;
     }else {
-        console.log(ga.resends,ga.resendLimit);
+        console.log(ga.resends[evolvedPop.fitness],ga.resendLimit);
     ga.crossPop(evolvedPop);    
     }
     if(ga.isLivePlot){
@@ -143,5 +143,5 @@ app.post('/evolved', async(req, res) => {
         socket.emit('evolved',evolvedPop);
     }
     console.log('<=:receiving :',evolvedPop._id);
-    console.log(ga.finished);
+    console.log(ga.finished.filter(f=> f.fitness===evolvedPop.fitness)[0].isFinish);
  }
