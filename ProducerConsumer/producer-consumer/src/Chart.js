@@ -89,7 +89,7 @@ labels={{5:this.state[obj.id]}}
 }
 Run(){
 let json= [];
-algorithm.clear({resendLimit:this.state.resendLimit*this.state.nMessages*this.state.fitness.filter(item=> item.checked).length,isLivePlot:this.state.isLivePlot});
+//algorithm.clear({resendLimit:this.state.resendLimit*this.state.nMessages*this.state.fitness.filter(item=> item.checked).length,isLivePlot:this.state.isLivePlot});
 this.state.fitness.filter(f=> f.checked).map(item=> item.name).forEach((func,fid)=>{
 for(let i=1;i<=this.state.nMessages;i++){
 let pSize=this.props.random.population? Math.round(Math.random()*999)+1:this.props.population;
@@ -146,7 +146,7 @@ algorithm.save(json);
 }
 async Clear(){
 this.setState({json:[],stop:true});
-var functions=[{name:'sphere',checked:true},{name:'rastringin',checked:false},{name:'rosenbrock',checked:true}].filter(f=> f.checked);
+var functions=this.state.fitness.filter(f=> f.checked);
 
 
 algorithm.clear({functions:functions,resendLimit:this.state.resendLimit*this.state.nMessages*this.state.fitness.filter(item=> item.checked).length,isLivePlot:this.state.isLivePlot});
