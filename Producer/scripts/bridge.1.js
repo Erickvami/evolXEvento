@@ -47,12 +47,16 @@ socket.on('connection',client=>{
     });
     client.on('clear',async (params)=>{
         console.log('clear');
-
-        ga.resends=0;
+        let resends={};
+        params.functions.forEach(fn=> {
+            resends[fn.name]=0
+            });
+        var areFinish= functions.map(fn=> {return {fitness:fn,isFinish:false}});
+        ga.resends=resends;
         ga.resendLimit=params.resendLimit;
         ga.isLivePlot=params.isLivePlot;
         ga.experimentId= new Date().getTime();
-        ga.finished=false;
+        ga.finished=areFinish;
         ga.done=false;
         console.log(params);
         // ga.globalPop=[];

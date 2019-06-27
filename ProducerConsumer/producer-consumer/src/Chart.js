@@ -146,7 +146,10 @@ algorithm.save(json);
 }
 async Clear(){
 this.setState({json:[],stop:true});
-algorithm.clear({resendLimit:this.state.resendLimit*this.state.nMessages*this.state.fitness.filter(item=> item.checked).length,isLivePlot:this.state.isLivePlot});
+var functions=[{name:'sphere',checked:true},{name:'rastringin',checked:false},{name:'rosenbrock',checked:true}].filter(f=> f.checked);
+
+
+algorithm.clear({functions:functions,resendLimit:this.state.resendLimit*this.state.nMessages*this.state.fitness.filter(item=> item.checked).length,isLivePlot:this.state.isLivePlot});
 
 }
 async Stop(){
