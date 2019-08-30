@@ -51,7 +51,7 @@ socket.on('connection',client=>{
         params.functions.forEach(fn=> {
             resends[fn.name]=0
             });
-        let areFinish= functions.map(fn=> {return {fitness:fn,isFinish:false}});
+        let areFinish= params.functions.map(fn=> {return {fitness:fn.name,isFinish:false}});
         ga.resends=resends;
         ga.resendLimit=params.resendLimit;
         ga.isLivePlot=params.isLivePlot;
@@ -59,6 +59,7 @@ socket.on('connection',client=>{
         ga.finished=areFinish;
         ga.done=false;
         console.log(params);
+        //console.log(ga);
         // ga.globalPop=[];
         ga.clearPopulation();
     });
@@ -109,7 +110,7 @@ app.post('/evolved', async(req, res) => {
     // ga.globalPop= ga.globalPop.filter(f=> f._id!==evolvedPop._id);
     // ga.globalPop.push(evolvedPop);
     ga.replaceIndividual(evolvedPop);
-    console.log('is finished:'+ga.finished)
+    console.log('is finished:'+ JSON.stringify(ga.finished))
     if(ga.resends[evolvedPop.fitness]>=ga.resendLimit || ga.finished.every(fn=> fn.isFinish)){
         if(!ga.done){
             ga.done=true;
@@ -136,7 +137,9 @@ app.post('/evolved', async(req, res) => {
         // ga.finished=true;
     }else {
         console.log(ga.resends[evolvedPop.fitness],ga.resendLimit);
-    ga.crossPop(evolvedPop);    
+        if(!ga.finished.filter(f=> f.fitness===evolvedPop.fitness)[0].isFinish){
+            ga.crossPop(evolvedPop);       
+        }
     }
     if(ga.isLivePlot){
         // console.log(ga.globalPop);

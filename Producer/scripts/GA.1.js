@@ -25,21 +25,13 @@ Save: async ()=>{
             dbo.collection("best").find({expId:module.exports.experimentId},{"sort": [['best','asc']]})
             .toArray().then(out2=> {
 
-                let log=[
-                    {
-                        benchmark:'sphere',
-                        population:out.filter(item=> item.fitness==='sphere').sort((a,b)=> a.best-b.best),
-                        bestsByIteration:out2.filter(item=> item.fitness=='sphere').sort((a,b)=> a.iteration-b.iteration)
-                    },{
-                        benchmark:'rastrigin',
-                        population:out.filter(item=> item.fitness==='rastringin').sort((a,b)=> a.best-b.best),
-                        bestsByIteration:out2.filter(item=> item.fitness=='rastringin').sort((a,b)=> a.iteration-b.iteration)
-                    },{
-                        benchmark:'rosenbrock',
-                        population:out.filter(item=> item.fitness==='rosenbrock').sort((a,b)=> a.best-b.best),
-                        bestsByIteration:out2.filter(item=> item.fitness=='rosenbrock').sort((a,b)=> a.iteration-b.iteration)
+                let log = module.exports.finished.map(fn=> {
+                    return {
+                        benchmark:fn.fitness,
+                        population:out.filter(item=> item.fitness===fn.fitness).sort((a,b)=> a.best-b.best),
+                        bestsByIteration:out2.filter(item=> item.fitness==fn.fitness).sort((a,b)=> a.iteration-b.iteration)
                     }
-                ];
+                });
                 writeJsonFile('Experiments/Experiment_'.concat(module.exports.experimentId,'.json'), log);
                 // module.exports.clearPopulation();
             });
@@ -83,12 +75,23 @@ MongoClient.connect(url, { useNewUrlParser: true },function(err, db) {
 send:(message,channel,fitness)=>{//sends one individual population to evolve
         if(module.exports.resends[fitness]<=module.exports.resendLimit || !module.exports.finished.filter(f=> f.fitness===fitness)[0].isFinish){
                         
-            return new Promise(async ()=>{
-                fetch("http://localhost:8080/function/"+channel+"-fn",{
+            // return new Promise(async ()=>{
+            //     fetch("http://localhost:8080/function/"+channel+"-fn",{
+            //                     method:"POST",
+            //                     body:message
+            //                 });
+            // });
+            tail.push(async ()=>{
+                let url="http://localhost:8080/function/"+channel+"-fn";
+                fetch(url,{
                                 method:"POST",
                                 body:message
                             });
             });
+            if(tail.length===2){
+                parallel(tail);
+                tail.splice(0,2);
+            }
         }
     return false;
     },
