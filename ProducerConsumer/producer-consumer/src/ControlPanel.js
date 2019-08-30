@@ -17,7 +17,7 @@ individual:{
 types:['int','float','decimal'],
 selected:'int',
 },
-individualSize:2,
+individualSize:20,
 mutation:{
 types:['Tournament2','Tournament3','Random','RandomLinearRank','Sequential','Fittest'],
 selected:'Tournament3'
@@ -34,8 +34,8 @@ crossoverType:{
 types:['uniform','splittingPointUniform','onePoint','ring'],
 selected:'splittingPointUniform'
 },
-iterations:50,
-population:100,
+iterations:100,
+population:200,
 mutationPercentage:0.2,
 crossoverPercentage:0.6,
 socialFactor:2.05,

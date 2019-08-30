@@ -31,7 +31,7 @@ _id:1,
 random:this.props.random,
 nMessages:10,
 json:[],
-fitness:[{name:'sphere',checked:false},{name:'rastringin',checked:false},{name:'rosenbrock',checked:true}],
+fitness:[{name:'sphere',checked:true},{name:'rastringin',checked:false},{name:'rosenbrock',checked:false}],
 plotValues:[],
 stop:true,
 resendLimit:5,
@@ -39,8 +39,10 @@ isRunning:false,
 eye:[{x:1,y:1,z:-1},{x:1,y:1,z:-1}],
 is3d:true,
 isLivePlot:true,
-isGA:false,
-isPSO:true
+isGA:true,
+isPSO:false,
+runNExperiment:1,
+finishedExperiments:0
 };
 this.Run= this.Run.bind(this);
 this.Stop= this.Stop.bind(this);
@@ -66,8 +68,42 @@ this.setState({isRunning:false});
 socket.on('finished',async(msn)=>{
 // alert('Evolution finished!');
 // setTimeout(()=>this.Save(),4000);
-if(window.confirm("Experiment ".concat(msn.experimentId," finished, save results?"))){
-algorithm.requestJSON(msn.experimentId);
+switch(this.state.runNExperiment){
+    case 1:
+            if(window.confirm("Experiment ".concat(msn.experimentId," finished, save results?"))){
+                algorithm.requestJSON(msn.experimentId);
+                }
+    break;
+    case 5:
+            console.log(this.state.finishedExperiments);
+
+        console.log(this.state.finishedExperiments<5);
+        if(this.state.finishedExperiments<5){
+            let wait15=0;
+                let waiting15 =setInterval(()=> { 
+                    console.log('waiting..'+wait15);
+                    if(wait15===10){
+                        this.Clear(false);
+                        clearInterval(waiting15);
+                        let wait152=0;
+                        let waiting152 =setInterval(()=> { 
+                            console.log('waiting..'+wait152);
+                            if(wait152===10){
+                                this.Run(5);
+                                clearInterval(waiting152);
+                            }else{
+                                wait152++;
+                            }
+                        },1000);
+                    }else{
+                        wait15++;
+                    }
+                },1000);
+        }
+    break;
+    default:
+
+    break;
 }
 });
 socket.on('getLog',async(msn)=>{
@@ -87,7 +123,7 @@ labels={{5:this.state[obj.id]}}
 />
 </label>;
 }
-Run(){
+Run(nTimes){
 let json= [];
 //algorithm.clear({resendLimit:this.state.resendLimit*this.state.nMessages*this.state.fitness.filter(item=> item.checked).length,isLivePlot:this.state.isLivePlot});
 this.state.fitness.filter(f=> f.checked).map(item=> item.name).forEach((func,fid)=>{
@@ -123,7 +159,7 @@ message.individualFactor= this.props.random.individualFactor? parseFloat(Math.ra
 message.inertiaFactor= this.props.random.inertiaFactor? parseFloat(Math.random().toFixed(1)*3):this.props.inertiaFactor;
 }
 json.push(message);
-this.setState({json:json,stop:false,isRunning:true,plotValues:[]});
+this.setState({json:json,stop:false,isRunning:true,plotValues:[],runNExperiment:nTimes});
 algorithm.send(message);
 }
 },this);
@@ -144,8 +180,8 @@ results:this.refs['plot-'+i].props.data.filter(f=> f.type==='scatter3d' || f.mod
 // console.log(json);
 algorithm.save(json);
 }
-async Clear(){
-this.setState({json:[],stop:true});
+async Clear(isReset){
+this.setState({json:[],stop:true, finishedExperiments:isReset? 1:parseInt(this.state.finishedExperiments)+1});
 var functions=this.state.fitness.filter(f=> f.checked);
 
 
@@ -210,9 +246,10 @@ return <Card>
 <ButtonGroup>
 {this.Checks({id:'fitness',label:'Fitness'})}
 {/* <Button onClick={this.Save} variant='primary'>Save</Button> */}
-<Button onClick={this.Clear} variant='warning'>Clear</Button>
+<Button onClick={()=> { this.Clear(true);}} variant='warning'>Clear</Button>
 {/* <Button onClick={this.Stop} variant='danger'>Stop</Button> */}
-<Button onClick={this.Run} variant='success'>Run</Button>
+<Button onClick={()=> this.Run(1)} variant='success'>Run</Button>
+<Button onClick={()=>{ this.Run(5);}} variant='success'>Run 5</Button>
 </ButtonGroup>
 {this.SliderInput({label:'Multi-population size',id:'nMessages',step:1,min:1,max:10,})}
 {this.SliderInput({label:'Multi-population Iterations',id:'resendLimit',step:1,min:1,max:50})}
