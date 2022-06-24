@@ -15,7 +15,7 @@
     "express": "^4.16.4",
     "firebase": "^5.8.6",
     "mongodb": "^3.2.3",
-    "node-fetch": "^2.4.1",
+    "node-fetch": "^2.6.7",
     "node-ip": "^0.1.2",
     "run-parallel": "^1.1.9",
     "scaledrone-node-push": "^2.2.0",
