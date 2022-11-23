@@ -19,7 +19,7 @@
     "node-ip": "^0.1.2",
     "run-parallel": "^1.1.9",
     "scaledrone-node-push": "^2.2.0",
-    "socket.io": "^2.2.0",
+    "socket.io": "^2.5.0",
     "write-json-file": "^3.1.0"
   }
 }
